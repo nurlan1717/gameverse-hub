@@ -1,0 +1,1 @@
+export const BASE_URL = "https://gameverse-backend-production.up.railway.app"

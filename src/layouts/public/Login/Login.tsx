@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { User, Lock, Facebook, Chrome } from "lucide-react";
-import { BASE_URL } from "../../../constants/api";
+import { ADMIN_URL_BASE, BASE_URL } from "../../../constants/api";
 import { toast, ToastContainer } from "react-toastify";
 import { useLoginUserMutation } from "../../../features/user/usersSlice";
 import { useDispatch } from "react-redux";
@@ -64,7 +64,7 @@ const Login = () => {
 
     const handleSocialLogin = async (provider: "google" | "facebook") => {
         try {
-            window.location.href = `${BASE_URL}/auth/${provider}`;
+            window.location.href = `${ADMIN_URL_BASE}auth/${provider}`;
         } catch (err: any) {
             console.error("Social login error:", err);
             setError("Social login failed. Please try again.");
@@ -73,25 +73,6 @@ const Login = () => {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get("token");
-        const role = queryParams.get("role");
-
-        if (token && role) {
-            Cookies.set("token", token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-            Cookies.set("role", role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-
-            navigate("/");
-            toast.success("Login Successfully");
-        }
-        if (Cookies.get("token")) {
-            navigate("/home");
-        }
-
-    }, []);
-
 
 
     return (

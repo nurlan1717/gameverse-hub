@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { User, Code, LogIn } from "lucide-react";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
+import { toast, ToastContainer } from "react-toastify";
 
 const RegisterChoice = () => {
     const navigate = useNavigate();
@@ -10,6 +11,26 @@ const RegisterChoice = () => {
         if (Cookies.get("token")) {
             navigate("/home");
         }
+    }, []);
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const token = queryParams.get("token");
+        const role = queryParams.get("role");
+        const id = queryParams.get("id");
+
+        if (token && role) {
+            Cookies.set("token", token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("role", role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("id", id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+
+            // navigate("/home");
+            toast.success("Login Successfully");
+        }
+        if (Cookies.get("token")) {
+            // navigate("/home");
+        }
+
     }, []);
 
     return (
@@ -39,6 +60,7 @@ const RegisterChoice = () => {
                     <LogIn size={20} /> Login
                 </button>
             </div>
+            <ToastContainer />
         </div>
     );
 };

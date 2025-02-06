@@ -1,42 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { User, Lock } from "lucide-react";
+import { User, Lock, Facebook, Chrome } from "lucide-react";
 import { BASE_URL } from "../../../constants/api";
-import { toast, ToastContainer } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify";
+import { useLoginUserMutation } from "../../../features/user/usersSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../app/store";
+import { setCredentials } from "../../../features/auth/authSlice";
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [loginUser] = useLoginUserMutation();
+
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleLogin = async () => {
+        if (!username || !password) {
+            setError("Username and password are required.");
+            toast.error("Please fill in all fields.");
+            return;
+        }
+
         setLoading(true);
         setError("");
 
         try {
-            const response = await fetch(`${BASE_URL}/api/users/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
-            });
+            const response = await loginUser({ username, password }).unwrap();
+            dispatch(setCredentials(response.data));
+            console.log(response.data);
 
-            const data = await response.json();
-            if (!response.ok) throw new Error("Login failed");
-            Cookies.set("token", data.token, { expires: 7 });
-            Cookies.set("role", data.data.role, { expires: 7 });
-            navigate("/");
+            if (!response.data.isVerified || !response.data.isVerifiedByAdmin) {
+                setError("Please verify your email and wait for admin approval!.");
+                toast.error("Please verify your email and wait for admin approval!.");
+                return;
+            }
+            Cookies.set("token", response.token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("role", response.data.role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("id", response.data.id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+
+            navigate("/home");
             toast.success("Login Successfully");
-            console.log(data);
         } catch (err: any) {
-            console.log(err);
-            setError("Login failed");
+            console.error("Login error:", err);
+
+            if (err) {
+                setError(err.data.message || "Invalid username or password.");
+                toast.error(err.data.message || "Login failed. Please try again.");
+            } else {
+                setError("Network error. Please check your connection.");
+                toast.error("Network error.");
+            }
         } finally {
             setLoading(false);
         }
     };
+
+ 
+
+    const handleSocialLogin = async (provider: "google" | "facebook") => {
+        try {
+            window.location.href = `${BASE_URL}/auth/${provider}`;
+        } catch (err: any) {
+            console.error("Social login error:", err);
+            setError("Social login failed. Please try again.");
+            toast.error("Social login failed.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const token = queryParams.get("token");
+        const role = queryParams.get("role");
+
+        if (token && role) {
+            Cookies.set("token", token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("role", role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+
+            navigate("/");
+            toast.success("Login Successfully");
+        }
+        if (Cookies.get("token")) {
+            navigate("/home");
+        }
+
+    }, []);
+
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -81,9 +137,18 @@ const Login = () => {
                     {loading ? "Loading..." : "Login"}
                 </button>
 
+                <div className="flex justify-center gap-4 mt-4">
+                    <button onClick={() => handleSocialLogin("google")} className="text-white bg-red-600 p-2 rounded-full">
+                        <Chrome size={24} />
+                    </button>
+                    <button onClick={() => handleSocialLogin("facebook")} className="text-white bg-blue-600 p-2 rounded-full">
+                        <Facebook size={24} />
+                    </button>
+                </div>
+
                 <p className="text-gray-400 text-center mt-4 text-sm">
                     Don't have an account?{" "}
-                    <Link to="/register" className="text-blue-400 hover:text-blue-300 cursor-pointer">Sign up</Link>
+                    <Link to="/" className="text-blue-400 hover:text-blue-300 cursor-pointer">Sign up</Link>
                 </p>
             </div>
             <ToastContainer />

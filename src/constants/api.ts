@@ -1,1 +1,1 @@
-export const BASE_URL: any = "https://gameverse-backend-production.up.railway.app"
+export const BASE_URL: any = "https://gameverse-backend-production.up.railway.app/api/"

@@ -18,25 +18,29 @@ import AdminPage from "../pages/Admin/AdminPage/AdminPage";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 
 import Register from "../layouts/public/Register/Register";
+import RegisterChoice from "../layouts/public/RegisterChoice/RegisterChoice.jsx";
+import DeveloperRegister from "../layouts/public/RegisterDev/RegisterDev.jsx";
+
 
 const AppRouter = () => {
     return (
         <Router>
             <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Login />} />
+                <Route path="/" element={<RegisterChoice />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/register/developer" element={<DeveloperRegister />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
                 <Route path="/admin" element={<AdminLogin />} />
 
                 {/* Client Routes */}
-                <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
+                <Route element={<ProtectedRoute allowedRoles={["user", "undefined", "developer", "admin"]} />}>
                     <Route element={<ClientLayouts />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/games" element={<Games />} />
-                        <Route path="/games/:id" element={<Details />} />
+                        <Route path="/home" element={<Home />} />
+                        <Route path="/home/games" element={<Games />} />
+                        <Route path="/home/games/:id" element={<Details />} />
                     </Route>
                 </Route>
 

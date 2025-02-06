@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useFormik } from "formik";
@@ -6,11 +6,15 @@ import * as Yup from "yup";
 import { User, Mail, Lock, ShieldCheck, Facebook, Chrome } from "lucide-react";
 import { BASE_URL } from "../../../constants/api";
 import axios from "axios"
+import { toast, ToastContainer } from "react-toastify"
+import { useRegisterUserMutation } from "../../../features/user/usersSlice";
+
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [register] = useRegisterUserMutation();
 
     const formik = useFormik({
         initialValues: {
@@ -35,18 +39,11 @@ const Register = () => {
 
             try {
                 const { confirmPassword, ...postData } = values;
-                const response = await fetch(`${BASE_URL}/api/users/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(postData),
-                });
+                const response = await register({ postData }).unwrap();
 
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || "Registration failed");
-
-                Cookies.set("token", data.token, { expires: 7 });
-                Cookies.set("role", data.data.role, { expires: 7 });
-                navigate("/");
+                Cookies.set("token", response.data.token, { expires: 7 });
+                Cookies.set("role", response.data.data.role, { expires: 7 });
+                navigate("/home");
             } catch (err: any) {
                 console.log(err);
                 setError(err.message || "Registration failed");
@@ -57,10 +54,33 @@ const Register = () => {
     });
 
     const handleSocialLogin = async (provider: "google" | "facebook") => {
-        axios.get(`${BASE_URL}/auth/${provider}`, { withCredentials: true })
-            .then(response => console.log(response.data))
-            .catch(error => console.error("Axios Error:", error));
+        try {
+            window.location.href = `${BASE_URL}/auth/${provider}`;
+        } catch (err: any) {
+            console.log(err);
+            setError("Login failed");
+        } finally {
+            setLoading(false);
+        }
     };
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const token = queryParams.get("token");
+        const role = queryParams.get("role");
+
+        if (token && role) {
+            Cookies.set("token", token, { expires: 7 });
+            Cookies.set("role", role, { expires: 7 });
+
+            navigate("/");
+            toast.success("Login Successfully");
+        }
+        if (Cookies.get("token")) {
+            navigate("/home");
+        }
+    }, []);
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
@@ -118,6 +138,7 @@ const Register = () => {
                     Have an account? <Link to="/login" className="text-blue-400 hover:text-blue-300">Sign in</Link>
                 </p>
             </div>
+            <ToastContainer />
         </div>
     );
 };

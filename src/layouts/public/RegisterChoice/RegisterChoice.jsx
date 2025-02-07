@@ -24,11 +24,11 @@ const RegisterChoice = () => {
             Cookies.set("role", role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
             Cookies.set("id", id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
 
-            // navigate("/home");
+            navigate("/");
             toast.success("Login Successfully");
         }
         if (Cookies.get("token")) {
-            // navigate("/home");
+            navigate("/home");
         }
 
     }, []);

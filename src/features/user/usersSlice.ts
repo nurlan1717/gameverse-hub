@@ -132,6 +132,7 @@ export const userApi = createApi({
         method: 'POST',
         body: payload,
       }),
+      invalidatesTags: ['Wishlist']
     }),
 
     // DELETE /api/users/me/wishlist/:gameId - Removes an item from the current user’s wishlist (Protected by auth middleware)
@@ -154,6 +155,7 @@ export const userApi = createApi({
         method: 'POST',
         body: payload,
       }),
+      invalidatesTags: ['Basket']
     }),
 
     // DELETE /api/users/me/basket/:gameId - Removes an item from the current user’s basket (Protected by auth middleware)

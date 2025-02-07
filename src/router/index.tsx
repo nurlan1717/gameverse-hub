@@ -20,6 +20,9 @@ import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 import Register from "../layouts/public/Register/Register";
 import RegisterChoice from "../layouts/public/RegisterChoice/RegisterChoice.jsx";
 import DeveloperRegister from "../layouts/public/RegisterDev/RegisterDev.jsx";
+import WishlistPage from "../pages/Client/Wishlist/WishlistPage.js";
+import BasketPage from "../pages/Client/Basket/Basket.js";
+import UserProfilePage from "../pages/UserProfile/UserProfilePage.js";
 
 
 const AppRouter = () => {
@@ -39,6 +42,9 @@ const AppRouter = () => {
                 <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
                     <Route element={<ClientLayouts />}>
                         <Route path="/home" element={<Home />} />
+                        <Route path="/wishlist" element={<WishlistPage />} />
+                        <Route path="/basket" element={<BasketPage />} />
+                        <Route path="/profile" element={<UserProfilePage />} />
                         <Route path="/home/games" element={<Games />} />
                         <Route path="/home/games/:id" element={<Details />} />
                     </Route>

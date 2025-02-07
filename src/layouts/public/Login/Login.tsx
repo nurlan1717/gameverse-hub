@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { User, Lock, Facebook, Chrome } from "lucide-react";
-import { ADMIN_URL_BASE, BASE_URL } from "../../../constants/api";
+import { ADMIN_URL_BASE } from "../../../constants/api";
 import { toast, ToastContainer } from "react-toastify";
 import { useLoginUserMutation } from "../../../features/user/usersSlice";
 import { useDispatch } from "react-redux";
@@ -60,7 +60,7 @@ const Login = () => {
         }
     };
 
- 
+
 
     const handleSocialLogin = async (provider: "google" | "facebook") => {
         try {
@@ -73,7 +73,11 @@ const Login = () => {
             setLoading(false);
         }
     };
-
+    useEffect(() => {
+        if (Cookies.get("token")) {
+            navigate("/home");
+        }
+    }, []);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">

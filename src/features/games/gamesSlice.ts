@@ -1,18 +1,35 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL, ADMIN_URL_BASE } from "../../constants/api";
 import { Game } from "../../types/game";
+import Cookies from 'js-cookie';
 
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    credentials: "include", 
+    prepareHeaders: (headers, { getState }) => {
+      let token = (getState() as any).auth?.token;
+      if (!token) {
+        token = Cookies.get('token');
+      }
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+    credentials: "include",
   }),
   tagTypes: ["Games", "PendingGames"],
   endpoints: (builder) => ({
     fetchGames: builder.query<Game[], void>({
       query: () => "games",
       providesTags: ["Games"],
+    }),
+    getGames: builder.query({
+      query: ({ limit }) => ({
+        url: 'games',
+        params: { limit },
+      }),
     }),
 
     createGame: builder.mutation<Game, FormData>({
@@ -72,4 +89,5 @@ export const {
   useFetchPendingGamesQuery,
   useApproveGameMutation,
   useRejectGameMutation,
+  useGetGamesQuery,
 } = gameApi;

@@ -20,15 +20,15 @@ const RegisterChoice = () => {
         const id = queryParams.get("id");
 
         if (token && role) {
-            Cookies.set("token", token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-            Cookies.set("role", role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-            Cookies.set("id", id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("token", token, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("role", role, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("id", id, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
 
             navigate("/");
             toast.success("Login Successfully");
         }
         if (Cookies.get("token")) {
-            navigate("/home");
+            navigate("/");
         }
 
     }, []);
@@ -60,8 +60,11 @@ const RegisterChoice = () => {
                     <LogIn size={20} /> Login
                 </button>
             </div>
-            <ToastContainer />
-        </div>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />        </div>
     );
 };
 

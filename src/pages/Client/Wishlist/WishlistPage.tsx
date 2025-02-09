@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../../features/user/usersSlice';
 import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+import { motion } from "framer-motion";
 
 type Game = {
     _id: string;
@@ -55,7 +56,10 @@ const WishlistPage = () => {
         .sort((a: Game, b: Game) => {
             return sortByPrice === 'asc' ? a.price - b.price : b.price - a.price;
         });
-
+    const boxVariants = {
+        hidden: { opacity: 0, x: -100 },
+        visible: { opacity: 1, x: 0 },
+    };
     if (isLoading) return (
         <div className="bg-[#101014] min-h-screen py-8">
             <div className="container mx-auto px-4">
@@ -79,7 +83,11 @@ const WishlistPage = () => {
     if (isError) return <div className="text-center py-8 text-red-500">Error: {JSON.stringify(wishlistError)}</div>;
 
     return (
-        <div className="bg-[#101014] min-h-screen py-8">
+        <motion.div
+            variants={ boxVariants}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }} className="bg-[#101014] min-h-screen py-22">
             <div className="container mx-auto px-4">
                 <h1 className="text-3xl font-bold text-white mb-6">My Wishlist</h1>
 
@@ -105,6 +113,12 @@ const WishlistPage = () => {
                         <option value="Adventure">Adventure</option>
                         <option value="RPG">RPG</option>
                         <option value="FPS">FPS</option>
+                        <option value="Simulation">Simulation</option>
+                        <option value="Strategy">Strategy</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Horror">Horror</option>
+                        <option value="Puzzle">Puzzle</option>
+                        <option value="Idle">Idle</option>
                     </select>
                     <select
                         value={sortByPrice}
@@ -173,7 +187,7 @@ const WishlistPage = () => {
                 )}
             </div>
             <ToastContainer />
-        </div>
+        </motion.div>
     );
 };
 

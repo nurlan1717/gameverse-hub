@@ -32,7 +32,6 @@ const Login = () => {
         try {
             const response = await loginUser({ username, password }).unwrap();
             dispatch(setCredentials(response.data));
-            console.log(response.data);
 
             if (!response.data.isVerified || !response.data.isVerifiedByAdmin) {
                 setError("Please verify your email and wait for admin approval!.");
@@ -43,7 +42,8 @@ const Login = () => {
             Cookies.set("role", response.data.role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
             Cookies.set("id", response.data.id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
 
-            navigate("/home");
+            navigate("/");
+            window.location.reload();
             toast.success("Login Successfully");
         } catch (err: any) {
             console.error("Login error:", err);
@@ -75,7 +75,7 @@ const Login = () => {
     };
     useEffect(() => {
         if (Cookies.get("token")) {
-            navigate("/home");
+            navigate("/");
         }
     }, []);
 
@@ -133,10 +133,14 @@ const Login = () => {
 
                 <p className="text-gray-400 text-center mt-4 text-sm">
                     Don't have an account?{" "}
-                    <Link to="/" className="text-blue-400 hover:text-blue-300 cursor-pointer">Sign up</Link>
+                    <Link to="/reg" className="text-blue-400 hover:text-blue-300 cursor-pointer">Sign up</Link>
                 </p>
             </div>
-            <ToastContainer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />
         </div>
     );
 };

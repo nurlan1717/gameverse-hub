@@ -26,9 +26,9 @@ export const gameApi = createApi({
       providesTags: ["Games"],
     }),
     getGames: builder.query({
-      query: ({ limit }) => ({
+      query: ({ limit, sort, freeWeekly }) => ({
         url: 'games',
-        params: { limit },
+        params: { limit, sort, freeWeekly },
       }),
     }),
 

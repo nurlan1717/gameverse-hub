@@ -170,8 +170,11 @@ const BasketPage = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
-        </div>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />        </div>
     );
 };
 

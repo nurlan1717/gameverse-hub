@@ -1,13 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "../../constants/api";
 import { Team } from "../../types/team";
+import Cookies from 'js-cookie';
 
 export const teamApi = createApi({
   reducerPath: "teamApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    credentials: "include", 
-  }),
+    prepareHeaders: (headers, { getState }) => {
+      let token = (getState() as any).auth?.token;
+      if (!token) {
+        token = Cookies.get('token');
+      }
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },  }),
   tagTypes: ["Teams"],
   endpoints: (builder) => ({
     fetchTeams: builder.query<Team[], void>({
@@ -24,11 +33,11 @@ export const teamApi = createApi({
       invalidatesTags: ["Teams"],
     }),
 
-    addMember: builder.mutation<void, { teamId: string; userId: string }>({
-      query: ({ teamId, userId }) => ({
+    addMember: builder.mutation<void, { teamId: string; userid: string }>({
+      query: ({ teamId, userid }) => ({
         url: `teams/${teamId}/members`,
         method: "POST",
-        body: { userId },
+        body: { userid },
       }),
       invalidatesTags: ["Teams"],
     }),

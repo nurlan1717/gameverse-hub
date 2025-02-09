@@ -5,7 +5,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { User, Mail, Lock, ShieldCheck, Facebook, Chrome } from "lucide-react";
 import { BASE_URL } from "../../../constants/api";
-import axios from "axios"
 import { toast, ToastContainer } from "react-toastify"
 import { useRegisterUserMutation } from "../../../features/user/usersSlice";
 
@@ -77,7 +76,7 @@ const Register = () => {
             toast.success("Login Successfully");
         }
         if (Cookies.get("token")) {
-            navigate("/home");
+            navigate("/");
         }
     }, []);
 
@@ -138,8 +137,11 @@ const Register = () => {
                     Have an account? <Link to="/login" className="text-blue-400 hover:text-blue-300">Sign in</Link>
                 </p>
             </div>
-            <ToastContainer />
-        </div>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />        </div>
     );
 };
 

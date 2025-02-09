@@ -23,6 +23,7 @@ import DeveloperRegister from "../layouts/public/RegisterDev/RegisterDev.jsx";
 import WishlistPage from "../pages/Client/Wishlist/WishlistPage.js";
 import BasketPage from "../pages/Client/Basket/Basket.js";
 import UserProfilePage from "../pages/UserProfile/UserProfilePage.js";
+import Teams from "../pages/Client/Teams/Teams.js";
 
 
 const AppRouter = () => {
@@ -30,7 +31,12 @@ const AppRouter = () => {
         <Router>
             <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<RegisterChoice />} />
+                <Route element={<ClientLayouts />}>
+                <Route index element={<Home />} />
+                <Route path="/tournament" element={<Teams />} />
+                </Route>
+
+                <Route path="/reg" element={<RegisterChoice />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/register/developer" element={<DeveloperRegister />} />
@@ -41,12 +47,11 @@ const AppRouter = () => {
                 {/* Client Routes */}
                 <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
                     <Route element={<ClientLayouts />}>
-                        <Route path="/home" element={<Home />} />
                         <Route path="/wishlist" element={<WishlistPage />} />
                         <Route path="/basket" element={<BasketPage />} />
                         <Route path="/profile" element={<UserProfilePage />} />
-                        <Route path="/home/games" element={<Games />} />
-                        <Route path="/home/games/:id" element={<Details />} />
+                        <Route path="/games" element={<Games />} />
+                        <Route path="/games/:id" element={<Details />} />
                     </Route>
                 </Route>
 

@@ -55,7 +55,7 @@ const DeveloperRegister = () => {
 
     useEffect(() => {
         if (Cookies.get("token")) {
-            navigate("/home");
+            navigate("/");
         }
     }, []);
 
@@ -65,7 +65,7 @@ const DeveloperRegister = () => {
                 {success ? (
                     <div className="text-center text-white">
                         <CheckCircle size={50} className="text-green-500 mx-auto mb-4" />
-                        <h2 className="text-2xl font-semibold">Verify Your Account</h2>
+                        <h2 className="text-2xl font-semibold">Verify Your Account And wait for the admin to approve it.</h2>
                         <p className="mt-2 text-gray-400">We've sent a verification link to your email.</p>
                     </div>
                 ) : (
@@ -117,7 +117,11 @@ const DeveloperRegister = () => {
                     </>
                 )}
             </div>
-            <ToastContainer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />
         </div>
     );
 };

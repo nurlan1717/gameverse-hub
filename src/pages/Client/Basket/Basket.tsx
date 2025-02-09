@@ -3,6 +3,7 @@ import { useGetBasketQuery, useRemoveFromBasketMutation, useClearBasketMutation 
 import { toast, ToastContainer } from 'react-toastify';
 
 type Game = {
+    quantity: number;
     gameId: {
         _id: string;
         title: string;
@@ -20,6 +21,7 @@ const BasketPage = () => {
         error: basketError,
         refetch
     } = useGetBasketQuery();
+    console.log(basketData);
 
     const [removeFromBasket] = useRemoveFromBasketMutation();
     const [clearBasket] = useClearBasketMutation();
@@ -44,9 +46,8 @@ const BasketPage = () => {
         }
     };
 
-    const totalPrice: number = basketData?.data?.reduce((sum: number, game: Game) => sum + game.gameId.price, 0) || 0;
-
-
+    const totalPrice: number = basketData?.data?.reduce((sum: number, game: Game) => sum + (game.gameId.price * game.quantity), 0) || 0;
+    
     if (isLoading) return (
         <div className="bg-[#101014] min-h-screen py-8">
             <div className="container mx-auto px-4">
@@ -90,6 +91,7 @@ const BasketPage = () => {
                                     <tr className="bg-[#2A2A2E]">
                                         <th className="text-left py-4 px-6 text-gray-400 font-semibold">Game</th>
                                         <th className="text-left py-4 px-6 text-gray-400 font-semibold">Price</th>
+                                        <th className="text-left py-4 px-6 text-gray-400 font-semibold">Quantity</th>
                                         <th className="text-right py-4 px-6 text-gray-400 font-semibold">Action</th>
                                     </tr>
                                 </thead>
@@ -110,6 +112,7 @@ const BasketPage = () => {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-[#26bbff] text-lg">${game.gameId.price}</td>
+                                            <td className="py-4 px-6 text-[#26bbff] text-lg">{game.quantity}</td>
                                             <td className="py-4 px-6 text-right">
                                                 <button
                                                     onClick={() => handleRemove(game.gameId._id)}

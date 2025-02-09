@@ -140,7 +140,7 @@ const ClientHeader = () => {
                 </div>
             </motion.div>
             <div className='bg-[#101014]'>
-                <div className="container mx-auto px-4 pt-20">
+                <div className="container mx-auto px-4 pt-26">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-4">
                         <div className="relative w-full md:w-auto">
                             <input

@@ -25,11 +25,17 @@ export const gameApi = createApi({
       query: () => "games",
       providesTags: ["Games"],
     }),
+
     getGames: builder.query({
       query: ({ limit, sort, freeWeekly }) => ({
         url: 'games',
         params: { limit, sort, freeWeekly },
       }),
+    }),
+
+    getGamesById: builder.query({
+      query: (id) => `games/${id}`,
+      providesTags: ["Games"],
     }),
 
     createGame: builder.mutation<Game, FormData>({
@@ -90,4 +96,5 @@ export const {
   useApproveGameMutation,
   useRejectGameMutation,
   useGetGamesQuery,
+  useGetGamesByIdQuery,
 } = gameApi;

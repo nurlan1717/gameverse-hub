@@ -76,10 +76,6 @@ const MyGamesSlider = () => {
 
     const handleAddToBasket = async (gameId: string) => {
         if (!handleAuthCheck()) return;
-        if (isInBasket(gameId)) {
-            toast.error('This game is already in your basket');
-            return;
-        }
         try {
             await addToBasket({ gameId }).unwrap();
             toast.success('Added to basket successfully!');

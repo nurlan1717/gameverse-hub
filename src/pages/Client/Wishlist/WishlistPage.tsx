@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../../features/user/usersSlice';
+import { useAddToBasketMutation, useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../../features/user/usersSlice';
 import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { motion } from "framer-motion";
+import Cookies from 'js-cookie';
 
 type Game = {
     _id: string;
@@ -31,6 +32,7 @@ const WishlistPage = () => {
     } = useGetWishlistQuery();
 
     const [removeFromWishlist] = useRemoveFromWishlistMutation();
+    const [addToBasket] = useAddToBasketMutation();
 
     const [selectedPlatform, setSelectedPlatform] = useState<string>('');
     const [selectedGenre, setSelectedGenre] = useState<string>('');
@@ -43,6 +45,25 @@ const WishlistPage = () => {
             refetch();
         } catch (err) {
             console.error('Failed to remove item:', err);
+        }
+    };
+
+    const handleAuthCheck = () => {
+        const token = Cookies.get('token');
+        if (!token) {
+            toast.error('Please login to perform this action');
+            return false;
+        }
+        return true;
+    };
+
+    const handleAddToBasket = async (gameId: string) => {
+        if (!handleAuthCheck()) return;
+        try {
+            await addToBasket({ gameId }).unwrap();
+            toast.success('Added to basket successfully!');
+        } catch (err) {
+            toast.error('Failed to add to basket');
         }
     };
 
@@ -84,7 +105,7 @@ const WishlistPage = () => {
 
     return (
         <motion.div
-            variants={ boxVariants}
+            variants={boxVariants}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }} className="bg-[#101014] min-h-screen py-22">
@@ -168,6 +189,12 @@ const WishlistPage = () => {
                                     <td className="py-4 px-6 text-[#26bbff] text-lg">${game.price}</td>
                                     <td className="py-4 px-6 text-right">
                                         <button
+                                            onClick={() => handleAddToBasket(game._id)}
+                                            className="bg-gray-100 mr-3 cursor-pointer hover:bg-gray-200 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg transition-all text-sm md:text-base"
+                                        >
+                                            Add Basket
+                                        </button>
+                                        <button
                                             onClick={() => handleRemove(game._id)}
                                             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-300"
                                         >
@@ -186,8 +213,12 @@ const WishlistPage = () => {
                     </div>
                 )}
             </div>
-            <ToastContainer />
-        </motion.div>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+            />
+                    </motion.div>
     );
 };
 

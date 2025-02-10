@@ -61,7 +61,8 @@ const Details: React.FC = () => {
         <div className="flex items-center gap-4 text-gray-300">
           <span>Genre: {game.data.genre}</span>
           <span>Platform: {game.data.platform}</span>
-          <Rating value={game.data.rating} precision={0.5} readOnly />
+          <Rating className='text-white' value={game.data.rating} precision={0.5} readOnly />
+
         </div>
       </div>
 

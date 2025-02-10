@@ -7,8 +7,9 @@ import gameverselogo from "../../assets/images/statics/gameverse.png";
 import { Heart, ShoppingCart, Menu, X, Search } from 'lucide-react';
 import React from 'react';
 import { motion } from "framer-motion";
+import UserSettings from './UserSettings';
 
-const ClientHeader = () => {
+const UserHeader = () => {
     const navigate = useNavigate();
     const [logout] = useLogoutMutation();
     const userData = useSelector((state: RootState) => state.auth.user?.data);
@@ -77,15 +78,6 @@ const ClientHeader = () => {
                             Tournaments
                         </NavLink>
                         <NavLink
-                            to="/chat"
-                            className={({ isActive }) =>
-                                `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
-                                }`
-                            }
-                        >
-                            Chat
-                        </NavLink>
-                        <NavLink
                             to="/about"
                             className={({ isActive }) =>
                                 `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
@@ -105,9 +97,6 @@ const ClientHeader = () => {
                         </Link>
                         <Link to="/tournament" className="text-gray-200 hover:text-white transition-colors block">
                             Tournaments
-                        </Link>
-                        <Link to="/chat" className="text-gray-200 hover:text-white transition-colors block">
-                            Chat
                         </Link>
                         <Link to="/about" className="text-gray-200 hover:text-white transition-colors block">
                             About
@@ -151,35 +140,8 @@ const ClientHeader = () => {
                     </div>
                 </div>
             </motion.div>
-            <div className='bg-[#101014]'>
-                <div className="container mx-auto px-4 pt-26">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-4">
-                        <div className="relative w-full md:w-auto">
-                            <input
-                                type="text"
-                                placeholder="Search store"
-                                className="bg-[#202024] text-white px-4 py-2 rounded-full pl-10 outline-none w-full md:w-60"
-                            />
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <Search size={18} />
-                            </span>
-                        </div>
-                        <nav className="flex gap-4 text-white">
-                            <a href="#" className="font-semibold hover:text-[#26bbff]">
-                                Discover
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white">
-                                Browse
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white">
-                                News
-                            </a>
-                        </nav>
-                    </div>
-                </div>
-            </div>
         </>
     );
 };
 
-export default ClientHeader;
+export default UserHeader;

@@ -79,18 +79,18 @@ const UserProfilePage = () => {
         }
     };
 
-    if (isLoading) return <div className='bg-[#101014] min-h-screen py-8 text-white'>Loading...</div>;
-    if (isError) return <div className='bg-[#101014] min-h-screen py-8 text-white flex' >Error loading profile.</div>;
+    if (isLoading) return <div className='bg-white min-h-screen py-8 text-white'>Loading...</div>;
+    if (isError) return <div className='bg-white min-h-screen py-8 text-white flex' >Error loading profile.</div>;
 
     return (
-        <div className="bg-[#101014] min-h-screen py-24">
+        <div className="bg-white min-h-screen py-2">
             <div className="container mx-auto px-4">
-                <div className="max-w-3xl mx-auto bg-[#1F1F23] rounded-lg p-8">
+                <div className="max-w-3xl mx-auto bg-gray-100 rounded-lg p-8">
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-3xl font-bold text-white">Profile</h1>
+                        <h1 className="text-3xl font-bold text-black">Profile</h1>
                         <button
                             onClick={handleEditToggle}
-                            className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-4 py-2 rounded-lg transition duration-300"
+                            className="bg-[#26bbff] hover:bg-[#1f9fd8] text-black px-4 py-2 rounded-lg transition duration-300"
                         >
                             {isEditing ? 'Cancel' : 'Edit Profile'}
                         </button>
@@ -108,42 +108,42 @@ const UserProfilePage = () => {
                                     aria-describedby="file_input_help"
                                     onChange={handleImageChange}
                                     accept="image/*"
-                                    className='block w-1/2 py-2 px-2 text-sm text-gray-100 border bg-[#2A2A2E] rounded-lg cursor-pointer '
+                                    className='block w-1/2 py-2 px-2 text-sm text-gray-800 border bg-white rounded-lg cursor-pointer '
                                 />
                             </div>
                             <div>
-                                <label className="block mt-2 text-gray-400 mb-2">Username</label>
+                                <label className="block mt-2 text-gray-800 mb-2">Username</label>
                                 <input
                                     type="text"
                                     name="username"
                                     value={formData.username}
                                     onChange={handleInputChange}
-                                    className="w-full bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none"
+                                    className="w-full bg-white text-black px-4 py-2 rounded-lg focus:outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block mt-2 text-gray-400 mb-2">Full Name</label>
+                                <label className="block mt-2 text-gray-800 mb-2">Full Name</label>
                                 <input
                                     type="text"
                                     name="fullName"
                                     value={formData.fullName}
                                     onChange={handleInputChange}
-                                    className="w-full bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none"
+                                    className="w-full bg-white text-black px-4 py-2 rounded-lg focus:outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block mt-2 text-gray-400 mb-2">Email</label>
+                                <label className="block mt-2 text-gray-8 mb-2">Email</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none"
+                                    className="w-full bg-white text-black px-4 py-2 rounded-lg focus:outline-none"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="bg-green-600 mt-5 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition duration-300"
+                                className="bg-green-600 mt-5 hover:bg-green-700 text-black px-6 py-2 rounded-lg transition duration-300"
                             >
                                 Save Changes
                             </button>
@@ -157,32 +157,32 @@ const UserProfilePage = () => {
                                     className="w-24 h-24 rounded-full"
                                 />
                                 <div>
-                                    <h1 className="text-2xl font-bold text-white">{currentUser?.fullName}</h1>
-                                    <p className="text-gray-400">@{currentUser?.username}</p>
+                                    <h1 className="text-2xl font-bold text-black">{currentUser?.fullName}</h1>
+                                    <p className="text-gray-800">@{currentUser?.username}</p>
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <span className="text-gray-400">Email:</span>
-                                    <p className="text-white">{currentUser?.email}</p>
+                                    <span className="text-gray-800">Email:</span>
+                                    <p className="text-black">{currentUser?.email}</p>
                                 </div>
                                 <div>
-                                    <span className="text-gray-400">Balance:</span>
-                                    <p className="text-[#26bbff]">${currentUser?.balance.toFixed(2)}</p>
+                                    <span className="text-gray-800">Balance:</span>
+                                    <p className="text-[#002f44]">${currentUser?.balance.toFixed(2)}</p>
                                 </div>
                                 <div>
-                                    <span className="text-gray-400">Status:</span>
+                                    <span className="text-gray-800">Status:</span>
                                     <p className={`${currentUser?.isVerified ? 'text-green-500' : 'text-red-500'}`}>
                                         {currentUser?.isVerified ? 'Verified' : 'Not Verified'}
                                     </p>
                                 </div>
                                 <div>
-                                    <span className="text-gray-400">Joined:</span>
-                                    <p className="text-white">{new Date(currentUser?.createdAt ?? '').toLocaleDateString()}</p>
+                                    <span className="text-gray-800">Joined:</span>
+                                    <p className="text-black">{new Date(currentUser?.createdAt ?? '').toLocaleDateString()}</p>
                                 </div>
                                 <div>
-                                    <span className="text-gray-400">Last Updated:</span>
-                                    <p className="text-white">{new Date(currentUser?.updatedAt || '').toLocaleDateString()}</p>
+                                    <span className="text-gray-800">Last Updated:</span>
+                                    <p className="text-black">{new Date(currentUser?.updatedAt || '').toLocaleDateString()}</p>
                                 </div>
                             </div>
                         </div>

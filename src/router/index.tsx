@@ -24,6 +24,8 @@ import WishlistPage from "../pages/Client/Wishlist/WishlistPage.js";
 import BasketPage from "../pages/Client/Basket/Basket.js";
 import UserProfilePage from "../pages/UserProfile/UserProfilePage.js";
 import Teams from "../pages/Client/Teams/Teams.js";
+import ProfileLayouts from "../layouts/UserProfile/ProfileLayouts.js";
+import Chat from "../components/Chat/Chat.js";
 
 
 const AppRouter = () => {
@@ -32,8 +34,16 @@ const AppRouter = () => {
             <Routes>
                 {/* Public Routes */}
                 <Route element={<ClientLayouts />}>
-                <Route index element={<Home />} />
-                <Route path="/tournament" element={<Teams />} />
+                    <Route index element={<Home />} />
+                    <Route path="/tournament" element={<Teams />} />
+                    <Route path="/games/:id" element={<Details />} />
+                    <Route path="/chat" element={<Chat />} />
+                </Route>
+
+                <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
+                    <Route path="/profile" element={<ProfileLayouts />}>
+                        <Route index element={<UserProfilePage />} />
+                    </Route>
                 </Route>
 
                 <Route path="/reg" element={<RegisterChoice />} />
@@ -51,7 +61,6 @@ const AppRouter = () => {
                         <Route path="/basket" element={<BasketPage />} />
                         <Route path="/profile" element={<UserProfilePage />} />
                         <Route path="/games" element={<Games />} />
-                        <Route path="/games/:id" element={<Details />} />
                     </Route>
                 </Route>
 

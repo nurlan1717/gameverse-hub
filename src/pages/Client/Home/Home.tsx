@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useFetchGamesQuery } from "../../../features/games/gamesSlice";
 import MyGamesSlider from "./MySwiper";
-import { Search } from "lucide-react";
 import GamesSection from "./GamesSection";
 import { motion } from "framer-motion";
+import TrendingGames from "./Trendinggames";
 
 const Home = () => {
   const { data, isLoading, refetch: fetchGames } = useFetchGamesQuery();
@@ -50,6 +50,8 @@ const Home = () => {
       <section className="relative w-full py-12 bg-[#101014]">
         <div className="container mx-auto px-4">
           <GamesSection />
+        </div>
+        <div>
         </div>
       </section>
     </>

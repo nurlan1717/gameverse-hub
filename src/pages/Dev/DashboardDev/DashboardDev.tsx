@@ -8,6 +8,7 @@ import {
     useCreateGameMutation,
     useUpdateGameMutation,
     useDeleteGameMutation,
+    useUploadGameFileMutation,
 } from "../../../features/games/gamesSlice";
 import { useGetUserByIdQuery } from "../../../features/user/usersSlice";
 import { toast, ToastContainer } from "react-toastify";
@@ -39,13 +40,15 @@ const DashboardDev = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-    const [fileList, setFileList] = useState<any[]>([]);
+    const [coverPhotoFileList, setCoverPhotoFileList] = useState<any[]>([]);
+    const [exeFileList, setExeFileList] = useState<any[]>([]);
     const id = Cookies.get("id") as string;
     const { data: user, isLoading: userLoading, isError: userError } = useGetUserByIdQuery(id);
     const { data: gamesData, isLoading: gamesLoading, isError: gamesError } = useFetchGamesQuery();
     const [createGame, { isLoading: isCreating }] = useCreateGameMutation();
     const [updateGame, { isLoading: isUpdating }] = useUpdateGameMutation();
     const [deleteGame, { isLoading: isDeleting }] = useDeleteGameMutation();
+    const [uploadGameFile, { isLoading: isUploading }] = useUploadGameFileMutation();
     const [form] = Form.useForm<GameFormValues>();
 
     const filteredGames: Game[] = gamesData?.data.filter((game: Game) => game.developerId === id);
@@ -58,30 +61,39 @@ const DashboardDev = () => {
 
     useEffect(() => {
         if (selectedGame) {
-            form.setFieldsValue(selectedGame);  
+            form.setFieldsValue(selectedGame);
         }
-    }, [selectedGame]); 
-
+    }, [selectedGame]);
 
     const handleAddGame = async (values: GameFormValues) => {
-        const formData = new FormData();
-        formData.append("title", values.title);
-        formData.append("description", values.description);
-        formData.append("systemRequirements", values.systemRequirements);
-        formData.append("videoTrailerUrl", values.videoTrailerUrl);
-        formData.append("price", values.price.toString());
-        formData.append("genre", values.genre);
-        formData.append("platform", values.platform);
-        formData.append("developerId", id);
-        if (values.coverPhotoUrl) {
-            formData.append("coverPhotoUrl", values.coverPhotoUrl);
-        }
         try {
-            const result = await createGame(formData).unwrap();
-            setGames([...games, { ...result, id: result._id, title: result.title, rating: result.rating, sales: result.sales, developerId: result.developerId }]);
+            const formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("systemRequirements", values.systemRequirements);
+            formData.append("videoTrailerUrl", values.videoTrailerUrl);
+            formData.append("price", values.price.toString());
+            formData.append("genre", values.genre);
+            formData.append("platform", values.platform);
+            formData.append("developerId", id);
+
+            if (values.coverPhotoUrl instanceof File) {
+                formData.append("coverPhotoUrl", values.coverPhotoUrl);
+            }
+
+            const createdGame = await createGame(formData).unwrap();
+            console.log(createdGame);
+            if (exeFileList.length > 0) {
+                const fileUrl = new FormData();
+                fileUrl.append("fileUrl", exeFileList[0].originFileObj);
+                await uploadGameFile({ gameId: createdGame._id, fileUrl: exeFileList[0].originFileObj }).unwrap();
+            }
+
+            setGames([...games, createdGame]);
             setIsModalVisible(false);
             form.resetFields();
-            setFileList([]);
+            setCoverPhotoFileList([]);
+            setExeFileList([]);
             toast.success("Game added successfully!");
         } catch (error) {
             console.error("Failed to create game:", error);
@@ -97,7 +109,6 @@ const DashboardDev = () => {
         };
         try {
             const result = await updateGame({ id: selectedGame._id, gameData: updatedGame }).unwrap();
-            console.log(result);
             setGames(games.map((game) => (game._id === selectedGame._id ? { ...game, ...result } : game)));
             setIsUpdateModalVisible(false);
             toast.success("Game updated successfully!");
@@ -187,11 +198,15 @@ const DashboardDev = () => {
         rating: game.rating,
     }));
 
-    const handleFileChange = ({ fileList }: any) => {
-        setFileList(fileList);
+    const handleCoverPhotoChange = ({ fileList }: any) => {
+        setCoverPhotoFileList(fileList);
         if (fileList.length > 0) {
             form.setFieldsValue({ coverPhotoUrl: fileList[0].originFileObj });
         }
+    };
+
+    const handleExeFileChange = ({ fileList }: any) => {
+        setExeFileList(fileList);
     };
 
     if (userLoading || gamesLoading) {
@@ -317,10 +332,29 @@ const DashboardDev = () => {
                         <Upload
                             beforeUpload={() => false}
                             listType="picture-card"
-                            fileList={fileList}
-                            onChange={handleFileChange}
+                            fileList={coverPhotoFileList}
+                            onChange={handleCoverPhotoChange}
                         >
-                            {fileList.length >= 1 ? null : (
+                            {coverPhotoFileList.length >= 1 ? null : (
+                                <div>
+                                    <PlusOutlined />
+                                    <div style={{ marginTop: 8 }}>Upload</div>
+                                </div>
+                            )}
+                        </Upload>
+                    </Form.Item>
+                    <Form.Item
+                        name="fileUrl"
+                        label="File .exe file"
+                        rules={[{ required: true, message: "Please upload a .exe file!" }]}
+                    >
+                        <Upload
+                            beforeUpload={() => false}
+                            listType="picture-card"
+                            fileList={exeFileList}
+                            onChange={handleExeFileChange}
+                        >
+                            {exeFileList.length >= 1 ? null : (
                                 <div>
                                     <PlusOutlined />
                                     <div style={{ marginTop: 8 }}>Upload</div>

@@ -188,11 +188,14 @@ const ClientHeader = () => {
                             </span>
                         </div>
                         <nav className="flex gap-4 text-white">
-                            <div className='flex gap-2'>
-                                <h1 className="font-semibold">Balance:</h1>
-                                <p className="font-bold">${userData?.balance}</p>
-
-                            </div>
+                            {token ? (
+                                <div className='flex gap-2'>
+                                    <h1 className="font-semibold">Balance:</h1>
+                                    <p className="font-bold">${userData?.balance}</p>
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
                             <NavLink
                                 to="/"
                                 className={({ isActive }) =>

@@ -29,6 +29,9 @@ import Chat from "../components/Chat/Chat.js";
 import DashboardDev from "../pages/Dev/DashboardDev/DashboardDev.js";
 import Stats from "../pages/Dev/stats/Stats.js";
 import GamesDev from "../pages/Dev/Games/Games.js";
+import UserEmailPage from "../pages/UserProfile/UserEmailPage.js";
+import UserPayment from "../pages/UserProfile/UserPayment.js";
+import UserLibrary from "../pages/UserProfile/UserLibrary.js";
 
 
 const AppRouter = () => {
@@ -46,6 +49,9 @@ const AppRouter = () => {
                 <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
                     <Route path="/profile" element={<ProfileLayouts />}>
                         <Route index element={<UserProfilePage />} />
+                        <Route path="email" element={<UserEmailPage />} />
+                        <Route path="payment" element={<UserPayment />} />
+                        <Route path="library" element={<UserLibrary />} />
                     </Route>
                 </Route>
 

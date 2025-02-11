@@ -84,6 +84,22 @@ export const gameApi = createApi({
       }),
       invalidatesTags: ["PendingGames"],
     }),
+
+    uploadGameFile: builder.mutation<
+      { message: string; fileUrl: string; game: Game },
+      { gameId: string; fileUrl: File }>({
+        query: ({ gameId, fileUrl }) => {
+          const formData = new FormData();
+          formData.append("fileUrl", fileUrl);
+
+          return {
+            url: `upload/upload/${gameId}`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        invalidatesTags: ["Games"],
+      }),
   }),
 });
 
@@ -97,4 +113,5 @@ export const {
   useRejectGameMutation,
   useGetGamesQuery,
   useGetGamesByIdQuery,
+  useUploadGameFileMutation,
 } = gameApi;

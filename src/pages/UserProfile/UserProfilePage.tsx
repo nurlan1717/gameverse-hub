@@ -84,7 +84,7 @@ const UserProfilePage = () => {
 
     return (
         <div className="bg-white min-h-screen py-2">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto">
                 <div className="max-w-3xl mx-auto bg-gray-100 rounded-lg p-8">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-3xl font-bold text-black">Profile</h1>

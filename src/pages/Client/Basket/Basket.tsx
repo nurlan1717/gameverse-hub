@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useGetBasketQuery, useRemoveFromBasketMutation, useClearBasketMutation } from '../../../features/user/usersSlice';
+import { useGetBasketQuery, useRemoveFromBasketMutation, useClearBasketMutation, useGetUserBalanceQuery, useDeductBalanceMutation, useAddToLibraryMutation } from '../../../features/user/usersSlice';
 import { toast, ToastContainer } from 'react-toastify';
+import { Modal } from 'antd';
+
+
 
 type Game = {
     quantity: number;
@@ -21,10 +24,12 @@ const BasketPage = () => {
         error: basketError,
         refetch
     } = useGetBasketQuery();
-    console.log(basketData);
 
     const [removeFromBasket] = useRemoveFromBasketMutation();
     const [clearBasket] = useClearBasketMutation();
+    const { data: userBalance } = useGetUserBalanceQuery();
+    const [deductBalance] = useDeductBalanceMutation();
+    const [addToLibrary] = useAddToLibraryMutation();
 
     const handleRemove = async (gameId: string) => {
         try {
@@ -46,8 +51,57 @@ const BasketPage = () => {
         }
     };
 
-    const totalPrice: number = basketData?.data?.reduce((sum: number, game: Game) => sum + (game.gameId.price * game.quantity), 0) || 0;
-    
+    const confirmPurchase = () => {
+        return new Promise<boolean>((resolve) => {
+            Modal.confirm({
+                title: 'Confirm Purchase',
+                content: `Are you sure you want to purchase ${basketData?.data.length} games for $${totalPrice}?`,
+                onOk: () => resolve(true),
+                onCancel: () => resolve(false),
+            });
+        });
+    };
+
+    const handleBuyNow = async () => {
+        if (!basketData?.data || basketData.data.length === 0) {
+            toast.error('Your basket is empty!');
+            return;
+        }
+        const totalPrice = basketData.data.reduce((sum: number, game: Game) => sum + game.gameId.price, 0);
+        if (!userBalance || userBalance.balance < totalPrice) {
+            toast.error('Insufficient balance!');
+            return;
+        }
+
+        const isConfirmed = await confirmPurchase();
+        if (!isConfirmed) {
+            return;
+        }
+
+        try {
+            for (const game of basketData.data) {
+                await addToLibrary({ gameId: game.gameId._id }).unwrap();
+            }
+            await deductBalance({ amount: totalPrice }).unwrap();
+            await clearBasket().unwrap();
+            toast.success('Purchase successful! The games have been added to your library.');
+            refetch();
+        } catch (err: any) {
+            console.log(err);
+            if (err.data?.message === "Game already in library") {
+                toast.error('One or more games are already in your library.');
+                return;
+            }
+            if (err.data?.message === "Invalid amount") {
+                toast.error('Invalid amount');
+                return;
+            }
+            toast.error('Failed to complete the purchase. Please try again.');
+        }
+    };
+
+    const totalPrice: number = basketData?.data?.reduce((sum: number, game: Game) => sum + game.gameId.price, 0) || 0;
+
     if (isLoading) return (
         <div className="bg-[#101014] min-h-screen py-8">
             <div className="container mx-auto px-4">
@@ -91,7 +145,6 @@ const BasketPage = () => {
                                     <tr className="bg-[#2A2A2E]">
                                         <th className="text-left py-4 px-6 text-gray-400 font-semibold">Game</th>
                                         <th className="text-left py-4 px-6 text-gray-400 font-semibold">Price</th>
-                                        <th className="text-left py-4 px-6 text-gray-400 font-semibold">Quantity</th>
                                         <th className="text-right py-4 px-6 text-gray-400 font-semibold">Action</th>
                                     </tr>
                                 </thead>
@@ -112,7 +165,6 @@ const BasketPage = () => {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-[#26bbff] text-lg">${game.gameId.price}</td>
-                                            <td className="py-4 px-6 text-[#26bbff] text-lg">{game.quantity}</td>
                                             <td className="py-4 px-6 text-right">
                                                 <button
                                                     onClick={() => handleRemove(game.gameId._id)}
@@ -166,8 +218,11 @@ const BasketPage = () => {
                                     Apply Coupon
                                 </button>
                             </div>
-                            <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-black px-4 py-2 rounded-lg transition duration-300">
-                                Proceed to Checkout
+                            <button
+                                onClick={handleBuyNow}
+                                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-black px-4 py-2 rounded-lg transition duration-300"
+                            >
+                                Buy Now
                             </button>
                         </div>
                     </div>

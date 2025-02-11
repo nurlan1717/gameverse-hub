@@ -14,6 +14,7 @@ const ClientHeader = () => {
     const userData = useSelector((state: RootState) => state.auth.user?.data);
     const token = Cookies.get("token");
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const role = Cookies.get("role");
 
     const handleLogout = () => {
         Cookies.remove("token");
@@ -94,6 +95,17 @@ const ClientHeader = () => {
                         >
                             About
                         </NavLink>
+                        {role === "developer" && (
+                            <NavLink
+                                to="/dev"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Panel
+                            </NavLink>
+                        )}
                     </nav>
 
                     <nav className={`sm:hidden w-full ${isMenuOpen ? 'block' : 'hidden'} space-y-4 text-center`}>
@@ -112,6 +124,17 @@ const ClientHeader = () => {
                         <Link to="/about" className="text-gray-200 hover:text-white transition-colors block">
                             About
                         </Link>
+                        {role === "developer" && (
+                            <NavLink
+                                to="/dev"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Panel
+                            </NavLink>
+                        )}
                     </nav>
 
                     <div className="flex items-center space-x-4 w-full sm:w-auto justify-center sm:justify-end">
@@ -165,15 +188,38 @@ const ClientHeader = () => {
                             </span>
                         </div>
                         <nav className="flex gap-4 text-white">
-                            <a href="#" className="font-semibold hover:text-[#26bbff]">
+                            <div className='flex gap-2'>
+                                <h1 className="font-semibold">Balance:</h1>
+                                <p className="font-bold">${userData?.balance}</p>
+
+                            </div>
+                            <NavLink
+                                to="/"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-white hover:text-white" : "text-gray-400 hover:text-white"
+                                    }`
+                                }
+                            >
                                 Discover
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white">
+                            </NavLink>
+                            <NavLink
+                                to="/browse"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-white hover:text-white" : "text-gray-400 hover:text-white"
+                                    }`
+                                }
+                            >
                                 Browse
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white">
+                            </NavLink>
+                            <NavLink
+                                to="/news"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-white hover:text-white" : "text-gray-400 hover:text-white"
+                                    }`
+                                }
+                            >
                                 News
-                            </a>
+                            </NavLink>
                         </nav>
                     </div>
                 </div>

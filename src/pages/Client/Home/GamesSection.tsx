@@ -7,13 +7,17 @@ const GamesSection = () => {
     const { data: ratingGames } = useGetGamesQuery({ limit: 5, sort: 'rating-desc' });
     const { data: freeWeeklyGames } = useGetGamesQuery({ limit: 5, freeWeekly: true });
 
+    const filteredSalesGames = salesGames?.data?.filter((game: Game) => game.approved);
+    const filteredRatingGames = ratingGames?.data?.filter((game: Game) => game.approved);
+    const filteredFreeWeeklyGames = freeWeeklyGames?.data?.filter((game: Game) => game.approved);
+
     const renderTableSection = (title: string, games: any, extraField?: string) => (
         <div className="flex-1 p-4 border-r border-[#2A2A2E] last:border-r-0">
             <h2 className="text-xl font-bold text-white mb-4 sticky top-0 bg-[#1F1F23] py-2">
                 {title}
             </h2>
             <div className="space-y-4">
-                {games?.data?.map((game: Game) => (
+                {games?.map((game: Game) => (
                     <Link
                         to={`/games/${game._id}`}
                         key={game._id}
@@ -59,9 +63,9 @@ const GamesSection = () => {
                 <div className="container mx-auto px-4">
 
                     <div className="flex flex-col md:flex-row gap-4 bg-[#1F1F23] rounded-xl overflow-hidden">
-                        {renderTableSection("Top Sales Games", salesGames, 'sales')}
-                        {renderTableSection("Top Rated Games", ratingGames, 'rating')}
-                        {renderTableSection("Free Weekly Games", freeWeeklyGames, 'free')}
+                        {renderTableSection("Top Sales Games", filteredSalesGames, 'sales')}
+                        {renderTableSection("Top Rated Games", filteredRatingGames, 'rating')}
+                        {renderTableSection("Free Weekly Games", filteredFreeWeeklyGames, 'free')}
                     </div>
                     <div className='flex justify-center mt-8 text-center'>
                         <Link to="games" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-10 py-4.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">

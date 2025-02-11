@@ -11,8 +11,8 @@ export interface Game {
         developerId: string;
         sales: number;
         createdAt: Date;
+        updatedAt: Date;
         price: number;
         platform: string;
         genre: string;
-
 }

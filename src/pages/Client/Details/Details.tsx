@@ -4,16 +4,19 @@ import { Rating, Button } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import Cookies from 'js-cookie';
 import { useGetGamesByIdQuery } from '../../../features/games/gamesSlice';
-import { useAddToBasketMutation, useAddToWishlistMutation } from '../../../features/user/usersSlice';
+import { useAddToBasketMutation, useAddToLibraryMutation, useAddToWishlistMutation, useDeductBalanceMutation, useGetBasketQuery, useGetUserBalanceQuery } from '../../../features/user/usersSlice';
+import { Modal } from 'antd';
 
 const Details: React.FC = () => {
+  const token = Cookies.get('token');
   const { id } = useParams<{ id: string }>();
   const { data: game, isLoading, isError } = useGetGamesByIdQuery(id);
   const [addToWishlist] = useAddToWishlistMutation();
   const [addToBasket] = useAddToBasketMutation();
-
-  const token = Cookies.get('token');
-
+  const { data: userBalance } = useGetUserBalanceQuery();
+  const [deductBalance] = useDeductBalanceMutation();
+  const [addToLibrary] = useAddToLibraryMutation();
+  const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
   if (isLoading) return <div className="text-gray-400">Loading...</div>;
   if (isError || !game) return <div className="text-red-400">Error loading game details.</div>;
 
@@ -24,6 +27,21 @@ const Details: React.FC = () => {
     }
     return true;
   };
+
+  const confirmPurchase = () => {
+    return new Promise<boolean>((resolve) => {
+      Modal.confirm({
+        title: 'Confirm Purchase',
+        content: `Are you sure you want to purchase this game for $${game.data.price}?`,
+        onOk: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+    });
+  };
+
+  const isInBasket = (gameId: any) =>
+    basketData?.data?.some((item: any) => item.gameId?._id === gameId);
+
 
   const handleAddToWishlist = async () => {
     if (!handleAuthCheck()) return;
@@ -41,6 +59,10 @@ const Details: React.FC = () => {
 
   const handleAddToBasket = async () => {
     if (!handleAuthCheck()) return;
+    if (isInBasket(game.data._id)) {
+      toast.error('This game is already in your basket')
+      return;
+    }
     try {
       await addToBasket({ gameId: game.data._id }).unwrap();
       toast.success('Added to basket successfully!');
@@ -49,9 +71,26 @@ const Details: React.FC = () => {
     }
   };
 
-  const handleBuyNow = () => {
-    if (!handleAuthCheck()) return;
-    alert('Buy Now clicked!');
+  const handleBuyNow = async () => {
+    if (!userBalance || userBalance.balance < game.data.price) {
+      toast.error('Insufficient balance!');
+      return;
+    }
+    const isConfirmed = await confirmPurchase();
+    if (!isConfirmed) {
+      return;
+    }
+    try {
+      await addToLibrary({ gameId: game.data._id }).unwrap();
+      await deductBalance({ amount: game.data.price }).unwrap();
+      toast.success('Purchase successful! The game has been added to your library.');
+    } catch (err: any) {
+      if (err.data?.message === "Game already in library") {
+        toast.error('Game already in library.');
+        return;
+      }
+      toast.error('Failed to complete the purchase. Please try again.');
+    }
   };
 
   return (

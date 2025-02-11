@@ -6,7 +6,6 @@ import { Navigation, Autoplay } from "swiper/modules";
 import {
     useAddToWishlistMutation,
     useAddToBasketMutation,
-    useGetWishlistQuery,
     useGetBasketQuery
 } from '../../../features/user/usersSlice';
 import { toast, ToastContainer } from 'react-toastify';
@@ -38,13 +37,12 @@ const platformIcons = {
 const MyGamesSlider = () => {
     const token = Cookies.get('token');
     const { data: gamesData, isLoading, isError } = useGetGamesQuery({ limit: 5 });
-    const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !token });
     const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
     const [addToWishlist] = useAddToWishlistMutation();
     const [addToBasket] = useAddToBasketMutation();
 
-    const isInWishlist = (gameId: string) =>
-        wishlistData?.data?.some((item: any) => item.gameId?._id === gameId);
+    const filteredGames = gamesData?.data?.filter((game: Game) => game.approved);
+
 
     const isInBasket = (gameId: string) =>
         basketData?.data?.some((item: any) => item.gameId?._id === gameId);
@@ -59,9 +57,6 @@ const MyGamesSlider = () => {
 
     const handleAddToWishlist = async (gameId: string) => {
         if (!handleAuthCheck()) return;
-        if (isInWishlist(gameId)) {
-
-        }
         try {
             await addToWishlist({ gameId }).unwrap();
             toast.success('Added to wishlist successfully!');
@@ -76,6 +71,10 @@ const MyGamesSlider = () => {
 
     const handleAddToBasket = async (gameId: string) => {
         if (!handleAuthCheck()) return;
+        if (isInBasket(gameId)) {
+            toast.error('This game is already in your basket')
+            return;
+        }
         try {
             await addToBasket({ gameId }).unwrap();
             toast.success('Added to basket successfully!');
@@ -107,7 +106,7 @@ const MyGamesSlider = () => {
                             </div>
                         </SwiperSlide>
                     ))
-                    : gamesData?.data?.map((game: Game) => (
+                    : filteredGames?.map((game: Game) => (
                         <SwiperSlide key={game._id} className="relative group rounded-lg overflow-hidden">
                             <img
                                 src={game.coverPhotoUrl}

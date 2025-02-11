@@ -26,6 +26,9 @@ import UserProfilePage from "../pages/UserProfile/UserProfilePage.js";
 import Teams from "../pages/Client/Teams/Teams.js";
 import ProfileLayouts from "../layouts/UserProfile/ProfileLayouts.js";
 import Chat from "../components/Chat/Chat.js";
+import DashboardDev from "../pages/Dev/DashboardDev/DashboardDev.js";
+import Stats from "../pages/Dev/stats/Stats.js";
+import GamesDev from "../pages/Dev/Games/Games.js";
 
 
 const AppRouter = () => {
@@ -59,14 +62,16 @@ const AppRouter = () => {
                     <Route element={<ClientLayouts />}>
                         <Route path="/wishlist" element={<WishlistPage />} />
                         <Route path="/basket" element={<BasketPage />} />
-                        <Route path="/profile" element={<UserProfilePage />} />
                         <Route path="/games" element={<Games />} />
                     </Route>
                 </Route>
 
                 {/* Developer Routes */}
                 <Route element={<ProtectedRoute allowedRoles={["developer", "admin"]} />}>
-                    <Route element={<DevLayouts />}>
+                    <Route path="/dev" element={<DevLayouts />}>
+                        <Route index element={<DashboardDev />} />
+                        <Route path="stats" element={<Stats />} />
+                        <Route path="games" element={<GamesDev />} />
                     </Route>
                 </Route>
 

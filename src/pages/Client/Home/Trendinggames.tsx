@@ -23,7 +23,7 @@ const TrendingGames: React.FC = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setGames(response.data.data);
+                setGames(response.data.data.filter((game: Game) => game.approved)); // Yalnız approved olanları saxla
             } catch (err) {
                 setError("Failed to fetch top selling games.");
             } finally {
@@ -33,6 +33,7 @@ const TrendingGames: React.FC = () => {
 
         fetchGames();
     }, []);
+    console.log(games);
 
     const handleGameClick = (gameId: string) => {
         navigate(`games/${gameId}`);
@@ -53,9 +54,8 @@ const TrendingGames: React.FC = () => {
                     {games.map((game) => (
                         <div
                             key={game._id}
-                            className={`relative bg-[#12122a] rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 ${
-                                game.freeWeekly ? "border-4 border-green-500" : ""
-                            }`}
+                            className={`relative bg-[#12122a] rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 ${game.freeWeekly ? "border-4 border-green-500" : ""
+                                }`}
                             onClick={() => handleGameClick(game._id)}
                         >
                             <img

@@ -15,6 +15,7 @@ const UserHeader = () => {
     const userData = useSelector((state: RootState) => state.auth.user?.data);
     const token = Cookies.get("token");
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const role = Cookies.get("role");
 
     const handleLogout = () => {
         Cookies.remove("token");
@@ -78,6 +79,15 @@ const UserHeader = () => {
                             Tournaments
                         </NavLink>
                         <NavLink
+                            to="/chat"
+                            className={({ isActive }) =>
+                                `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                }`
+                            }
+                        >
+                            Chat
+                        </NavLink>
+                        <NavLink
                             to="/about"
                             className={({ isActive }) =>
                                 `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
@@ -86,6 +96,17 @@ const UserHeader = () => {
                         >
                             About
                         </NavLink>
+                        {role === "developer" && (
+                            <NavLink
+                                to="/dev"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Panel
+                            </NavLink>
+                        )}
                     </nav>
 
                     <nav className={`sm:hidden w-full ${isMenuOpen ? 'block' : 'hidden'} space-y-4 text-center`}>
@@ -97,6 +118,9 @@ const UserHeader = () => {
                         </Link>
                         <Link to="/tournament" className="text-gray-200 hover:text-white transition-colors block">
                             Tournaments
+                        </Link>
+                        <Link to="/chat" className="text-gray-200 hover:text-white transition-colors block">
+                            Chat
                         </Link>
                         <Link to="/about" className="text-gray-200 hover:text-white transition-colors block">
                             About

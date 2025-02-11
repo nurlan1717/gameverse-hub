@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useAddToBasketMutation, useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../../features/user/usersSlice';
+import { useAddToBasketMutation, useGetBasketQuery, useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../../features/user/usersSlice';
 import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { motion } from "framer-motion";
@@ -21,6 +21,7 @@ const platformLogos: { [key: string]: string } = {
     Xbox: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Xbox_one_logo.svg/1280px-Xbox_one_logo.svg.png',
     Nintendo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Nintendo.svg/1280px-Nintendo.svg.png',
 };
+const token = Cookies.get('token');
 
 const WishlistPage = () => {
     const {
@@ -30,6 +31,7 @@ const WishlistPage = () => {
         error: wishlistError,
         refetch
     } = useGetWishlistQuery();
+    const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
 
     const [removeFromWishlist] = useRemoveFromWishlistMutation();
     const [addToBasket] = useAddToBasketMutation();
@@ -37,6 +39,11 @@ const WishlistPage = () => {
     const [selectedPlatform, setSelectedPlatform] = useState<string>('');
     const [selectedGenre, setSelectedGenre] = useState<string>('');
     const [sortByPrice, setSortByPrice] = useState<'asc' | 'desc'>('asc');
+
+    const isInBasket = (gameId: any) =>
+        basketData?.data?.some((item: any) => item.gameId?._id === gameId);
+
+
 
     const handleRemove = async (gameId: string) => {
         try {
@@ -59,6 +66,10 @@ const WishlistPage = () => {
 
     const handleAddToBasket = async (gameId: string) => {
         if (!handleAuthCheck()) return;
+        if (isInBasket(gameId)) {
+            toast.error('This game is already in your basket')
+            return;
+        }
         try {
             await addToBasket({ gameId }).unwrap();
             toast.success('Added to basket successfully!');
@@ -218,7 +229,7 @@ const WishlistPage = () => {
                 autoClose={3000}
                 toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
             />
-                    </motion.div>
+        </motion.div>
     );
 };
 

@@ -43,6 +43,22 @@ type BasketItem = {
   quantity: number;
 };
 
+interface UserBalance {
+  balance: number;
+}
+
+interface AddToLibraryResponse {
+  message: string;
+}
+
+interface DeductBalanceRequest {
+  amount: number;
+}
+
+interface AddToLibraryRequest {
+  gameId: string;
+}
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -64,13 +80,36 @@ export const userApi = createApi({
     }),
 
     getUserByUsername: builder.query<any, string>({
-      query: (username) => `users/username/${username}`, // Backend endpoint
+      query: (username) => `users/username/${username}`,
       providesTags: (result, error, username) => [{ type: 'User', username }],
     }),
 
     getUserById: builder.query<any, string>({
       query: (id) => `users/${id}`,
       providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+
+    getUserBalance: builder.query<UserBalance, void>({
+      query: () => 'users/balance/get',
+      providesTags: ['User'],
+    }),
+
+    deductBalance: builder.mutation<UserBalance, DeductBalanceRequest>({
+      query: (body) => ({
+        url: 'users/deduct-balance',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    addToLibrary: builder.mutation<AddToLibraryResponse, AddToLibraryRequest>({
+      query: (body) => ({
+        url: 'users/library',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
     }),
 
     registerUser: builder.mutation<any, Record<string, any>>({
@@ -258,4 +297,7 @@ export const {
   useSubscribeMutation,
   useTopUpMutation,
   useRedeemCouponMutation,
+  useGetUserBalanceQuery,
+  useDeductBalanceMutation,
+  useAddToLibraryMutation,
 } = userApi;

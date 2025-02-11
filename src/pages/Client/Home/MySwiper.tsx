@@ -22,7 +22,7 @@ type Game = {
     price: number;
     genre: string;
     platform: string;
-    rating: number;
+    averageRating: number;
     freeWeekly: boolean;
     createdAt: Date;
 };
@@ -125,7 +125,7 @@ const MyGamesSlider = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-yellow-400 text-lg">★ {game.rating}</span>
+                                        <span className="text-yellow-400 text-lg">★ {game.averageRating}</span>
                                     </div>
                                 </div>
 

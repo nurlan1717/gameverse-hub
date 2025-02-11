@@ -87,19 +87,26 @@ export const gameApi = createApi({
 
     uploadGameFile: builder.mutation<
       { message: string; fileUrl: string; game: Game },
-      { gameId: string; fileUrl: File }>({
-        query: ({ gameId, fileUrl }) => {
-          const formData = new FormData();
-          formData.append("fileUrl", fileUrl);
-
-          return {
-            url: `upload/upload/${gameId}`,
-            method: "POST",
-            body: formData,
-          };
-        },
-        invalidatesTags: ["Games"],
+      { gameId: string; file: File }
+    >({
+      query: ({ gameId, file }) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return {
+          url: `upload/${gameId}`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["Games"],
+    }),
+    rateGame: builder.mutation({
+      query: ({ gameId, userId, rating }) => ({
+        url: `/games/${gameId}/rate`, 
+        method: 'POST',
+        body: { userId, rating },
       }),
+    }),
   }),
 });
 
@@ -114,4 +121,5 @@ export const {
   useGetGamesQuery,
   useGetGamesByIdQuery,
   useUploadGameFileMutation,
+  useRateGameMutation,
 } = gameApi;

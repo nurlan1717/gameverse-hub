@@ -19,7 +19,7 @@ const { Option } = Select;
 interface Game {
     _id: string;
     title: string;
-    rating: number;
+    averageRating: number;
     sales: number;
     developerId: string;
 }
@@ -77,16 +77,16 @@ const DashboardDev = () => {
             formData.append("platform", values.platform);
             formData.append("developerId", id);
 
-            if (values.coverPhotoUrl instanceof File) {
+            if (values.coverPhotoUrl) {
                 formData.append("coverPhotoUrl", values.coverPhotoUrl);
             }
 
             const createdGame = await createGame(formData).unwrap();
             console.log(createdGame);
             if (exeFileList.length > 0) {
-                const fileUrl = new FormData();
-                fileUrl.append("fileUrl", exeFileList[0].originFileObj);
-                await uploadGameFile({ gameId: createdGame._id, fileUrl: exeFileList[0].originFileObj }).unwrap();
+                const fileData = new FormData();
+                fileData.append("file", exeFileList[0].originFileObj);
+                await uploadGameFile({ gameId: createdGame.data._id, file: exeFileList[0].originFileObj }).unwrap();
             }
 
             setGames([...games, createdGame]);
@@ -153,8 +153,8 @@ const DashboardDev = () => {
         },
         {
             title: "Rating",
-            dataIndex: "rating",
-            key: "rating",
+            dataIndex: "averageRating",
+            key: "averageRating",
         },
         {
             title: "Status",
@@ -195,7 +195,7 @@ const DashboardDev = () => {
 
     const ratingData = games.map((game) => ({
         name: game.title,
-        rating: game.rating,
+        rating: game.averageRating,
     }));
 
     const handleCoverPhotoChange = ({ fileList }: any) => {
@@ -207,6 +207,9 @@ const DashboardDev = () => {
 
     const handleExeFileChange = ({ fileList }: any) => {
         setExeFileList(fileList);
+        if (fileList.length > 0) {
+            form.setFieldsValue({ fileUrl: fileList[0].originFileObj });
+        }
     };
 
     if (userLoading || gamesLoading) {
@@ -260,7 +263,7 @@ const DashboardDev = () => {
                     <Card>
                         <Statistic
                             title="Average Rating"
-                            value={(games.reduce((acc, game) => acc + game.rating, 0) / games.length || 0)}
+                            value={(games.reduce((acc, game) => acc + game.averageRating, 0) / games.length || 0)}
                             precision={1}
                         />
                     </Card>

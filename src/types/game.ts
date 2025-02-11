@@ -4,7 +4,7 @@ export interface Game {
         description: string;
         coverPhotoUrl: string;
         videoTrailerUrl: string;
-        rating: number;
+        averageRating: number;
         systemRequirements: string;
         freeWeekly: boolean;
         approved: boolean;

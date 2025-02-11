@@ -41,7 +41,7 @@ const GamesSection = () => {
                                 )}
                                 {extraField === 'rating' && (
                                     <span className="text-yellow-400 text-sm">
-                                        ★ {game.rating}
+                                        ★ {game.averageRating}
                                     </span>
                                 )}
                                 {extraField === 'free' && (

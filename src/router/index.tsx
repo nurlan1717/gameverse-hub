@@ -32,18 +32,21 @@ import GamesDev from "../pages/Dev/Games/Games.js";
 import UserEmailPage from "../pages/UserProfile/UserEmailPage.js";
 import UserPayment from "../pages/UserProfile/UserPayment.js";
 import UserLibrary from "../pages/UserProfile/UserLibrary.js";
+import News from "../pages/Client/News/News.js";
+import Tournaments from "../pages/Client/Tournament/Tournaments.js";
 
 
 const AppRouter = () => {
     return (
         <Router>
             <Routes>
-                {/* Public Routes */}
                 <Route element={<ClientLayouts />}>
                     <Route index element={<Home />} />
-                    <Route path="/tournament" element={<Teams />} />
+                    <Route path="/team" element={<Teams />} />
                     <Route path="/games/:id" element={<Details />} />
                     <Route path="/chat" element={<Chat />} />
+                    <Route path="/news" element={<News />} />
+                    <Route path="/tournament" element={<Tournaments />} />
                 </Route>
 
                 <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>

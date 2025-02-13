@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useFetchGamesQuery } from "../../../features/games/gamesSlice";
 import MyGamesSlider from "./MySwiper";
-import GamesSection from "./GamesSection";
+import HomeSections from "./HomeSection";
 import { motion } from "framer-motion";
-import TrendingGames from "./Trendinggames";
+import GamesSection from "./GamesSection";
 
 const Home = () => {
   const { data, isLoading, refetch: fetchGames } = useFetchGamesQuery();
@@ -22,7 +22,6 @@ const Home = () => {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="relative w-full h-[500px] md:h-[600px] flex items-center justify-center text-white">
         <div className="absolute inset-0 bg-[#101014] bg-opacity-90">
-
           <div className="container mx-auto px-4 mt-8">
             {isLoading ? (
               <div className="animate-pulse space-y-6">
@@ -46,12 +45,13 @@ const Home = () => {
           </div>
         </div>
       </motion.div>
+      <div>
+        <GamesSection />
+      </div>
 
       <section className="relative w-full py-12 bg-[#101014]">
         <div className="container mx-auto px-4">
-          <GamesSection />
-        </div>
-        <div>
+          <HomeSections />
         </div>
       </section>
     </>

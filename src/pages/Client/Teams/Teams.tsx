@@ -1,51 +1,62 @@
 import { useState } from 'react';
 import {
-    useFetchTeamsQuery,
+    useGetTeamsQuery,
     useCreateTeamMutation,
     useAddMemberMutation,
     useRemoveMemberMutation,
-    useDeleteTeamMutation,
 } from '../../../features/teams/teamsSlice';
-import { useGetUserByIdQuery, useGetUserByUsernameQuery } from '../../../features/user/usersSlice';
-import { toast } from 'react-toastify';
+import { useGetUserByUsernameQuery } from '../../../features/user/usersSlice';
+import { toast, ToastContainer } from 'react-toastify';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { Upload, X, Plus, UserPlus, UserMinus, Trophy } from 'lucide-react';
 
 interface Team {
     _id: string;
     name: string;
     description: string;
+    logo?: string;
     members: Array<{
         userId: string;
         role: string;
         _id: string;
         joinedAt: string;
+        userDetails?: {
+            username: string;
+        };
     }>;
 }
 
 interface NewTeam {
     name: string;
     description: string;
+    logo?: File;
 }
 
 const Teams = () => {
-    const { data: teams, isLoading, error, refetch } = useFetchTeamsQuery();
+    const { data: teams, isLoading, error, refetch } = useGetTeamsQuery({});
     const [createTeam] = useCreateTeamMutation();
     const [addMember] = useAddMemberMutation();
     const [removeMember] = useRemoveMemberMutation();
-    const [deleteTeam] = useDeleteTeamMutation();
     const navigate = useNavigate();
-
     const [newTeam, setNewTeam] = useState<NewTeam>({ name: '', description: '' });
     const [newMember, setNewMember] = useState<{ [key: string]: string }>({});
     const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
-    const userId = Cookies.get('id');
+    const [previewLogo, setPreviewLogo] = useState<string | null>(null);
+    const id = Cookies.get('id');
     const token = Cookies.get('token');
+
+    const { data: userData, error: userError } = useGetUserByUsernameQuery(
+        Object.values(newMember)[0] || '',
+        {
+            skip: !Object.values(newMember)[0],
+        }
+    );
 
     if (!token) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-[#101014]">
-                <div className="bg-[#121216] p-8 rounded-2xl shadow-lg  text-center">
+                <div className="bg-[#121216] p-8 rounded-2xl shadow-lg text-center">
                     <h2 className="text-2xl font-semibold text-gray-400">Access Denied</h2>
                     <p className="text-white mt-2">You need to log in first to access this page.</p>
                     <button
@@ -56,15 +67,35 @@ const Teams = () => {
                     </button>
                 </div>
             </div>
-        )
+        );
     }
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setNewTeam({ ...newTeam, logo: file });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewLogo(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleCreateTeam = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await createTeam(newTeam).unwrap();
+            const formData = new FormData();
+            formData.append('name', newTeam.name);
+            formData.append('description', newTeam.description);
+            if (newTeam.logo) {
+                formData.append('logo', newTeam.logo);
+            }
+
+            await createTeam(formData).unwrap();
             toast.success('Team created successfully');
             setNewTeam({ name: '', description: '' });
+            setPreviewLogo(null);
             setIsCreateTeamModalOpen(false);
             refetch();
         } catch (err) {
@@ -73,17 +104,23 @@ const Teams = () => {
     };
 
     const handleAddMember = async (teamId: string) => {
-        if (!newMember[teamId]) return;
+        if (!newMember[teamId]) {
+            toast.error('Please enter a username');
+            return;
+        }
 
-        const { data: user, error: userError } = await useGetUserByUsernameQuery(newMember[teamId]);
-        console.log(user);
         if (userError) {
             toast.error('User not found');
             return;
         }
 
+        if (!userData?._id) {
+            toast.error('Invalid user data');
+            return;
+        }
+
         try {
-            await addMember({ teamId, userid: user.data._id }).unwrap();
+            await addMember({ teamId, userId: userData._id }).unwrap();
             toast.success('Member added successfully');
             setNewMember({ ...newMember, [teamId]: '' });
             refetch();
@@ -102,63 +139,29 @@ const Teams = () => {
         }
     };
 
-    const handleDeleteTeam = async (teamId: string) => {
-        try {
-            await deleteTeam(teamId).unwrap();
-            toast.success('Team deleted successfully');
-            refetch();
-        } catch (err) {
-            toast.error('Error deleting team');
-        }
-    };
-
     const isCaptain = (team: Team) => {
-        return team.members.some(member => member.userId === userId && member.role === 'captain');
+        const iscaptain = team.members.some((member) => {
+            return member.userId._id === id && member.role === 'captain';
+        });
+        return iscaptain;
     };
 
-    const MemberName = ({ userId }: { userId: string }) => {
-        const { data: user, isLoading, error } = useGetUserByIdQuery(userId);
-        if (isLoading) return <span className="text-gray-300">Loading...</span>;
-        if (error) return <span className="text-gray-300">Unknown User</span>;
-        return <span className="text-gray-300">{user?.data?.username || 'Unknown User'}</span>;
-    };
 
     if (isLoading) {
         return (
-            <div className="bg-[#101014] min-h-screen p-8 mt-22">
+            <div className="bg-[#101014] min-h-screen p-8">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex justify-end mb-8">
                         <div className="bg-[#1F1F23] h-10 w-32 rounded-lg animate-pulse"></div>
                     </div>
-
-                    <div className="bg-[#1F1F23] rounded-lg p-6 mb-8">
-                        <div className="h-8 w-48 bg-[#2A2A2E] rounded-lg animate-pulse mb-4"></div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {[...Array(3)].map((_, index) => (
-                                <div key={index} className="bg-[#2A2A2E] p-4 rounded-lg">
-                                    <div className="h-6 w-32 bg-[#1F1F23] rounded-lg animate-pulse mb-2"></div>
-                                    <div className="h-4 w-24 bg-[#1F1F23] rounded-lg animate-pulse mb-2"></div>
-                                    <div className="h-4 w-36 bg-[#1F1F23] rounded-lg animate-pulse mb-4"></div>
-                                    <div className="h-10 w-full bg-[#1F1F23] rounded-lg animate-pulse"></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[...Array(3)].map((_, index) => (
+                        {[...Array(6)].map((_, index) => (
                             <div key={index} className="bg-[#1F1F23] rounded-lg p-6">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div className="h-6 w-48 bg-[#2A2A2E] rounded-lg animate-pulse mb-2"></div>
-                                        <div className="h-4 w-64 bg-[#2A2A2E] rounded-lg animate-pulse"></div>
-                                    </div>
-                                    <div className="h-6 w-6 bg-[#2A2A2E] rounded-lg animate-pulse"></div>
-                                </div>
-                                <div className="h-10 w-full bg-[#2A2A2E] rounded-lg animate-pulse mb-4"></div>
+                                <div className="h-16 w-16 bg-[#2A2A2E] rounded-full animate-pulse mb-4 mx-auto"></div>
+                                <div className="h-6 w-32 bg-[#2A2A2E] rounded-lg animate-pulse mb-2 mx-auto"></div>
+                                <div className="h-4 w-48 bg-[#2A2A2E] rounded-lg animate-pulse mb-4 mx-auto"></div>
                                 <div className="space-y-2">
-                                    <div className="h-6 w-24 bg-[#2A2A2E] rounded-lg animate-pulse mb-2"></div>
-                                    {[...Array(2)].map((_, i) => (
+                                    {[...Array(3)].map((_, i) => (
                                         <div key={i} className="h-12 w-full bg-[#2A2A2E] rounded-lg animate-pulse"></div>
                                     ))}
                                 </div>
@@ -170,52 +173,79 @@ const Teams = () => {
         );
     }
 
-    if (error) return <div className="text-center py-8 text-red-500">Error loading teams</div>;
+    if (error) return (
+        <div className="flex items-center justify-center min-h-screen bg-[#101014]">
+            <div className="text-red-500 bg-[#1F1F23] p-6 rounded-lg">
+                Error loading teams. Please try again later.
+            </div>
+        </div>
+    );
 
     return (
         <div className="bg-[#101014] min-h-screen p-8">
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-end mb-8">
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-3xl font-bold text-white">My Teams</h1>
                     <button
                         onClick={() => setIsCreateTeamModalOpen(true)}
-                        className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-6 py-2 rounded-lg transition-colors"
+                        className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2"
                     >
+                        <Plus size={20} />
                         Create Team
                     </button>
                 </div>
 
                 {isCreateTeamModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                        <div className="bg-[#1F1F23] rounded-lg p-6 w-full max-w-md">
-                            <h2 className="text-2xl font-bold text-white mb-4">Create New Team</h2>
-                            <form onSubmit={handleCreateTeam} className="flex flex-col gap-4">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-[#1F1F23] rounded-lg p-6 w-full max-w-md relative">
+                            <button
+                                onClick={() => {
+                                    setIsCreateTeamModalOpen(false);
+                                    setPreviewLogo(null);
+                                }}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                            >
+                                <X size={24} />
+                            </button>
+                            <h2 className="text-2xl font-bold text-white mb-6">Create New Team</h2>
+                            <form onSubmit={handleCreateTeam} className="space-y-4">
+                                <div className="flex flex-col items-center mb-6">
+                                    <div className="w-24 h-24 rounded-full bg-[#2A2A2E] flex items-center justify-center mb-4 overflow-hidden">
+                                        {previewLogo ? (
+                                            <img src={previewLogo} alt="Team logo preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Upload size={32} className="text-gray-400" />
+                                        )}
+                                    </div>
+                                    <label className="cursor-pointer bg-[#2A2A2E] text-white px-4 py-2 rounded-lg hover:bg-[#353539] transition-colors">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleLogoChange}
+                                            className="hidden"
+                                        />
+                                        Upload Logo
+                                    </label>
+                                </div>
                                 <input
                                     type="text"
                                     placeholder="Team Name"
-                                    className="flex-1 bg-[#2A2A2E] text-white px-4 py-2 rounded-lg"
+                                    className="w-full bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#26bbff]"
                                     value={newTeam.name}
                                     onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
                                 />
-                                <input
-                                    type="text"
+                                <textarea
                                     placeholder="Team Description"
-                                    className="flex-1 bg-[#2A2A2E] text-white px-4 py-2 rounded-lg"
+                                    className="w-full bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#26bbff] min-h-[100px]"
                                     value={newTeam.description}
                                     onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
                                 />
                                 <div className="flex gap-2">
                                     <button
                                         type="submit"
-                                        className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-6 py-2 rounded-lg transition-colors"
+                                        className="flex-1 bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-6 py-2 rounded-lg transition-colors"
                                     >
-                                        Create
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsCreateTeamModalOpen(false)}
-                                        className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
-                                    >
-                                        Cancel
+                                        Create Team
                                     </button>
                                 </div>
                             </form>
@@ -223,82 +253,71 @@ const Teams = () => {
                     </div>
                 )}
 
-                <div className="bg-[#1F1F23] rounded-lg p-6 mb-8">
-                    <h2 className="text-2xl font-bold text-white mb-4">Active Tournaments</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="bg-[#2A2A2E] p-4 rounded-lg">
-                            <h3 className="text-xl font-bold text-white">Tournament Name</h3>
-                            <p className="text-gray-400">Game: Example Game</p>
-                            <p className="text-gray-400">Starts: 01/01/2023</p>
-                            <button className="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg w-full transition-colors">
-                                Register
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {teams?.data?.map((team: Team) => (
-                        <div key={team._id} className="bg-[#1F1F23] rounded-lg p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="text-xl font-bold text-white">{team.name}</h3>
-                                    <p className="text-gray-400 text-sm">{team.description}</p>
+                        <div key={team._id} className="bg-[#1F1F23] rounded-lg p-6 hover:shadow-lg transition-shadow">
+                            <div className="flex flex-col items-center mb-6">
+                                <div className="w-20 h-20 rounded-full bg-[#2A2A2E] mb-4 overflow-hidden">
+                                    {team.logo ? (
+                                        <img src={team.logo} alt={`${team.name} logo`} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Trophy size={32} className="text-gray-400" />
+                                        </div>
+                                    )}
                                 </div>
-                                {isCaptain(team) && (
-                                    <button
-                                        onClick={() => handleDeleteTeam(team._id)}
-                                        className="text-red-500 hover:text-red-400"
-                                    >
-                                        Delete
-                                    </button>
-                                )}
+                                <h3 className="text-xl font-bold text-white text-center">{team.name}</h3>
+                                <p className="text-gray-400 text-sm text-center mt-1">{team.description}</p>
                             </div>
 
                             {isCaptain(team) && (
                                 <div className="flex gap-2 mb-4">
                                     <input
                                         type="text"
-                                        placeholder="Username"
-                                        className="flex-1 bg-[#2A2A2E] text-white px-4 py-2 rounded-lg"
+                                        placeholder="Add member by username"
+                                        className="flex-1 bg-[#2A2A2E] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#26bbff]"
                                         value={newMember[team._id] || ''}
                                         onChange={(e) => setNewMember({ ...newMember, [team._id]: e.target.value })}
                                     />
                                     <button
                                         onClick={() => handleAddMember(team._id)}
-                                        className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white px-4 py-2 rounded-lg"
+                                        className="bg-[#26bbff] hover:bg-[#1f9fd8] text-white p-2 rounded-lg"
+                                        title="Add Member"
                                     >
-                                        Add
+                                        <UserPlus size={20} />
                                     </button>
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <h4 className="text-white font-medium">Members:</h4>
+                                <h4 className="text-white font-medium mb-3">Team Members</h4>
                                 {team.members.map((member) => (
-                                    <div key={member._id} className="flex justify-between items-center bg-[#2A2A2E] p-3 rounded-lg">
+                                    <div key={member?.userDetails?._id} className="flex justify-between items-center bg-[#2A2A2E] p-3 rounded-lg">
                                         <div>
-                                            <MemberName userId={member.userId} />
-                                            <span className="text-gray-500 text-sm ml-2">({member.role})</span>
+                                            <span className="text-gray-300">{member?.userDetails?.username || 'Unknown User'}</span>
+                                            <span className={`text-sm ml-2 ${member.role === 'captain' ? 'text-[#26bbff]' : 'text-gray-500'}`}>
+                                                ({member.role})
+                                            </span>
                                         </div>
                                         {isCaptain(team) && member.role !== 'captain' && (
                                             <button
-                                                onClick={() => handleRemoveMember(team._id, member._id)}
-                                                className="text-red-500 hover:text-red-400"
+                                                onClick={() => handleRemoveMember(team._id, member?.userDetails?._id)}
+                                                className="text-red-500 hover:text-red-400 p-1"
+                                                title="Remove Member"
                                             >
-                                                Remove
+                                                <UserMinus size={18} />
                                             </button>
                                         )}
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Tournament Registration Button (Only for Captains) */}
                             {isCaptain(team) && (
                                 <button
                                     onClick={() => {/* useRegisterForTournamentMutation */ }}
-                                    className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors"
+                                    className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >
+                                    <Trophy size={20} />
                                     Register for Tournament
                                 </button>
                             )}
@@ -306,6 +325,7 @@ const Teams = () => {
                     ))}
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };

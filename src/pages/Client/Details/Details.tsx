@@ -6,6 +6,8 @@ import Cookies from 'js-cookie';
 import { useGetGamesByIdQuery } from '../../../features/games/gamesSlice';
 import { useAddToBasketMutation, useAddToLibraryMutation, useAddToWishlistMutation, useDeductBalanceMutation, useGetBasketQuery, useGetUserBalanceQuery } from '../../../features/user/usersSlice';
 import { Modal } from 'antd';
+import SkeletonLoading from './SkeletonLoading';
+import ErrorMessage from './ErrorMessage';
 
 const Details: React.FC = () => {
   const token = Cookies.get('token');
@@ -17,8 +19,9 @@ const Details: React.FC = () => {
   const [deductBalance] = useDeductBalanceMutation();
   const [addToLibrary] = useAddToLibraryMutation();
   const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
-  if (isLoading) return <div className="text-gray-400">Loading...</div>;
-  if (isError || !game) return <div className="text-red-400">Error loading game details.</div>;
+
+  if (isLoading) return <div className="text-gray-400"><SkeletonLoading /></div>;
+  if (isError || !game) return <div className="text-red-400"><ErrorMessage message="Error loading game details." /></div>;
 
   const handleAuthCheck = () => {
     if (!token) {
@@ -100,7 +103,7 @@ const Details: React.FC = () => {
         <div className="flex items-center gap-4 text-gray-300">
           <span>Genre: {game.data.genre}</span>
           <span>Platform: {game.data.platform}</span>
-          <Rating className='text-white' value={game.data.rating} precision={0.5} readOnly />
+          <Rating className='text-white' value={game.data.averageRating} precision={0.5} readOnly />
 
         </div>
       </div>

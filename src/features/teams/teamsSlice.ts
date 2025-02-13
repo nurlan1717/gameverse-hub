@@ -1,69 +1,63 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
 import { BASE_URL } from "../../constants/api";
-import { Team } from "../../types/team";
-import Cookies from 'js-cookie';
 
 export const teamApi = createApi({
   reducerPath: "teamApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      let token = (getState() as any).auth?.token;
-      if (!token) {
-        token = Cookies.get('token');
-      }
+    baseUrl: `${BASE_URL}teams`,
+    prepareHeaders: (headers) => {
+      const token = Cookies.get("token");
       if (token) {
-        headers.set('authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
-    },  }),
-  tagTypes: ["Teams"],
+    },
+  }),
+  tagTypes: ["Team"],
   endpoints: (builder) => ({
-    fetchTeams: builder.query<Team[], void>({
-      query: () => "teams",
-      providesTags: ["Teams"],
+    getTeams: builder.query({
+      query: () => "/",
+      providesTags: ["Team"],
     }),
-
-    createTeam: builder.mutation<Team, { name: string; description: string }>({
+    createTeam: builder.mutation({
       query: (teamData) => ({
-        url: "teams",
+        url: "/",
         method: "POST",
         body: teamData,
       }),
-      invalidatesTags: ["Teams"],
+      invalidatesTags: ["Team"],
     }),
-
-    addMember: builder.mutation<void, { teamId: string; userid: string }>({
-      query: ({ teamId, userid }) => ({
-        url: `teams/${teamId}/members`,
+    addMember: builder.mutation({
+      query: ({ teamId, userId }) => ({
+        url: `/${teamId}/members`,
         method: "POST",
-        body: { userid },
+        body: { userId },
       }),
-      invalidatesTags: ["Teams"],
+      invalidatesTags: ["Team"],
     }),
-
-    removeMember: builder.mutation<void, { teamId: string; memberId: string }>({
+    removeMember: builder.mutation({
       query: ({ teamId, memberId }) => ({
-        url: `teams/${teamId}/members/${memberId}`,
+        url: `/${teamId}/members/${memberId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Teams"],
+      invalidatesTags: ["Team"],
     }),
-
-    deleteTeam: builder.mutation<void, string>({
-      query: (teamId) => ({
-        url: `teams/${teamId}`,
-        method: "DELETE",
+    registerForTournament: builder.mutation({
+      query: ({ teamId, tournamentId }) => ({
+        url: "/register",
+        method: "POST",
+        body: { teamId, tournamentId },
       }),
-      invalidatesTags: ["Teams"],
+      invalidatesTags: ["Team"],
     }),
   }),
 });
 
 export const {
-  useFetchTeamsQuery,
+  useGetTeamsQuery,
   useCreateTeamMutation,
   useAddMemberMutation,
   useRemoveMemberMutation,
-  useDeleteTeamMutation,
+  useRegisterForTournamentMutation,
 } = teamApi;

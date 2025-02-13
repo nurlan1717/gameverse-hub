@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Select, Card, Statistic, Row, Col, Upload, Skeleton, Popconfirm } from "antd";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { UserOutlined, MailOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Cookies from 'js-cookie';
 import {
@@ -22,6 +22,9 @@ interface Game {
     averageRating: number;
     sales: number;
     developerId: string;
+    price: number;
+    description: string;
+    approved: boolean;
 }
 
 interface GameFormValues {
@@ -82,7 +85,6 @@ const DashboardDev = () => {
             }
 
             const createdGame = await createGame(formData).unwrap();
-            console.log(createdGame);
             if (exeFileList.length > 0) {
                 const fileData = new FormData();
                 fileData.append("file", exeFileList[0].originFileObj);
@@ -134,39 +136,51 @@ const DashboardDev = () => {
             title: "Title",
             dataIndex: "title",
             key: "title",
+            responsive: ['sm'],
         },
         {
             title: "Description",
             dataIndex: "description",
             key: "description",
+            responsive: ['md'],
         },
         {
             title: "Price",
             dataIndex: "price",
             key: "price",
             render: (price: number) => `$${price}`,
+            responsive: ['sm'],
         },
         {
             title: "Sales",
             dataIndex: "sales",
             key: "sales",
+            responsive: ['md'],
         },
         {
             title: "Rating",
             dataIndex: "averageRating",
             key: "averageRating",
+            responsive: ['lg'],
         },
         {
             title: "Status",
             dataIndex: "approved",
             key: "approved",
-            render: (approved: boolean) => (approved ? "Approved" : "Pending"),
+            render: (approved: boolean) => (
+                <span className={approved ? 'text-green-500' : 'text-yellow-500'}>
+                    {approved ? 'Approved' : 'Pending'}
+                </span>
+            ),
+            responsive: ['sm'],
         },
         {
             title: "Actions",
             key: "actions",
+            fixed: 'right',
+            width: 100,
             render: (_: any, record: Game) => (
-                <div key={record._id}>
+                <div className="flex space-x-2">
                     <Button
                         type="link"
                         icon={<EditOutlined />}
@@ -214,245 +228,352 @@ const DashboardDev = () => {
 
     if (userLoading || gamesLoading) {
         return (
-            <div className="p-6">
+            <div className="p-4 md:p-6 lg:p-8">
                 <Skeleton active />
             </div>
         );
     }
 
     if (userError || gamesError) {
-        return <div>Error loading data</div>;
+        return (
+            <div className="p-4 md:p-6 lg:p-8 text-center text-red-500">
+                Error loading data
+            </div>
+        );
     }
 
     return (
-        <div className="py-30 px-6 bg-gray-100 min-h-screen">
-            <ToastContainer position="bottom-right" autoClose={3000} />
-            <Card className="mb-6">
-                <div className="flex items-center space-x-4">
-                    <UserOutlined className="text-4xl text-blue-500" />
-                    <div>
-                        <h2 className="text-2xl font-semibold">{user?.data.username}</h2>
-                        <p className="text-gray-600">
-                            <MailOutlined /> {user?.data.email}
-                        </p>
+        <div className="min-h-screen bg-gray-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-14 lg:px-12 py-28">
+                <ToastContainer position="bottom-right" autoClose={3000} />
+                
+                {/* Profile Card */}
+                <Card className="mb-6 shadow-md">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                        <div className="flex-shrink-0">
+                            <UserOutlined className="text-4xl text-blue-500" />
+                        </div>
+                        <div className="text-center sm:text-left">
+                            <h2 className="text-2xl font-semibold">{user?.data.username}</h2>
+                            <p className="text-gray-600 flex items-center justify-center sm:justify-start space-x-2">
+                                <MailOutlined />
+                                <span>{user?.data.email}</span>
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </Card>
+                </Card>
 
-            <Row gutter={16} className="mb-6">
-                <Col span={12}>
-                    <Card>
+                {/* Statistics Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <Card className="shadow-md">
                         <Statistic title="Total Games" value={games.length} />
                     </Card>
-                </Col>
-                <Col span={12}>
-                    <Card>
-                        <Statistic title="Total Sales" value={games.reduce((acc, game) => acc + game.sales, 0)} />
+                    <Card className="shadow-md">
+                        <Statistic 
+                            title="Total Sales" 
+                            value={games.reduce((acc, game) => acc + game.sales, 0)} 
+                        />
                     </Card>
-                </Col>
-                <Col span={12}>
-                    <Card>
+                    <Card className="shadow-md">
                         <Statistic
                             title="Total Revenue"
                             value={games.reduce((acc, game) => acc + game.sales * game.price, 0)}
-                            suffix="$"
+                            prefix="$"
                         />
                     </Card>
-                </Col>
-                <Col span={12}>
-                    <Card>
+                    <Card className="shadow-md">
                         <Statistic
                             title="Average Rating"
-                            value={(games.reduce((acc, game) => acc + game.averageRating, 0) / games.length || 0)}
-                            precision={1}
+                            value={
+                                games.length > 0
+                                    ? (games.reduce((acc, game) => acc + game.averageRating, 0) / games.length).toFixed(1)
+                                    : 0
+                            }
+                            suffix="/5"
                         />
                     </Card>
-                </Col>
-            </Row>
+                </div>
 
-            <Row gutter={16} className="mb-6">
-                <Col span={12}>
-                    <Card title="Sales Over Time">
-                        <LineChart width={500} height={300} data={salesData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="sales" stroke="#8884d8" />
-                        </LineChart>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <Card title="Sales Over Time" className="shadow-md">
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={salesData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="sales" stroke="#8884d8" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Card>
-                </Col>
-                <Col span={12}>
-                    <Card title="Ratings">
-                        <LineChart width={500} height={300} data={ratingData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="rating" stroke="#82ca9d" />
-                        </LineChart>
+                    <Card title="Ratings" className="shadow-md">
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={ratingData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="rating" stroke="#82ca9d" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Card>
-                </Col>
-            </Row>
+                </div>
 
-            <Card
-                title="Games"
-                extra={
-                    <Button type="primary" onClick={() => setIsModalVisible(true)}>
-                        Add New Game
-                    </Button>
-                }
-            >
-                <Table dataSource={games} columns={columns} rowKey="id" />
-            </Card>
-
-            <Modal
-                title="Add New Game"
-                visible={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
-            >
-                <Form form={form} onFinish={handleAddGame} layout="horizontal">
-                    <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-                        <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item name="systemRequirements" label="System Requirements" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="videoTrailerUrl" label="Video Trailer (Embed Url)" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="coverPhotoUrl"
-                        label="Cover Photo"
-                        rules={[{ required: true, message: "Please upload a cover photo!" }]}
-                    >
-                        <Upload
-                            beforeUpload={() => false}
-                            listType="picture-card"
-                            fileList={coverPhotoFileList}
-                            onChange={handleCoverPhotoChange}
-                        >
-                            {coverPhotoFileList.length >= 1 ? null : (
-                                <div>
-                                    <PlusOutlined />
-                                    <div style={{ marginTop: 8 }}>Upload</div>
-                                </div>
-                            )}
-                        </Upload>
-                    </Form.Item>
-                    <Form.Item
-                        name="fileUrl"
-                        label="File .exe file"
-                        rules={[{ required: true, message: "Please upload a .exe file!" }]}
-                    >
-                        <Upload
-                            beforeUpload={() => false}
-                            listType="picture-card"
-                            fileList={exeFileList}
-                            onChange={handleExeFileChange}
-                        >
-                            {exeFileList.length >= 1 ? null : (
-                                <div>
-                                    <PlusOutlined />
-                                    <div style={{ marginTop: 8 }}>Upload</div>
-                                </div>
-                            )}
-                        </Upload>
-                    </Form.Item>
-                    <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                        <Input type="number" />
-                    </Form.Item>
-                    <Form.Item name="genre" label="Genre" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="FPS">FPS</Option>
-                            <Option value="RPG">RPG</Option>
-                            <Option value="Action">Action</Option>
-                            <Option value="Adventure">Adventure</Option>
-                            <Option value="Simulation">Simulation</Option>
-                            <Option value="Strategy">Strategy</Option>
-                            <Option value="Sports">Sports</Option>
-                            <Option value="Horror">Horror</Option>
-                            <Option value="Puzzle">Puzzle</Option>
-                            <Option value="Idle">Idle</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="platform" label="Platform" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="PC">PC</Option>
-                            <Option value="PlayStation">PlayStation</Option>
-                            <Option value="Xbox">Xbox</Option>
-                            <Option value="Nintendo">Nintendo</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={isCreating}>
-                            Add Game
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
-            <Modal
-                title="Update Game"
-                visible={isUpdateModalVisible}
-                onCancel={() => setIsUpdateModalVisible(false)}
-                footer={null}
-            >
-                <Form
-                    form={form}
-                    initialValues={selectedGame || {}}
-                    onFinish={handleUpdateGame}
-                    layout="horizontal"
+                <Card
+                    title={
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                            <h2 className="text-xl font-semibold">Games</h2>
+                            <Button 
+                                type="primary" 
+                                onClick={() => setIsModalVisible(true)}
+                                className="w-full sm:w-auto"
+                            >
+                                Add New Game
+                            </Button>
+                        </div>
+                    }
+                    className="shadow-md"
                 >
-                    <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-                        <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item name="systemRequirements" label="System Requirements" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="videoTrailerUrl" label="Video Trailer (Embed Url)" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                        <Input type="number" />
-                    </Form.Item>
-                    <Form.Item name="genre" label="Genre" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="FPS">FPS</Option>
-                            <Option value="RPG">RPG</Option>
-                            <Option value="Action">Action</Option>
-                            <Option value="Adventure">Adventure</Option>
-                            <Option value="Simulation">Simulation</Option>
-                            <Option value="Strategy">Strategy</Option>
-                            <Option value="Sports">Sports</Option>
-                            <Option value="Horror">Horror</Option>
-                            <Option value="Puzzle">Puzzle</Option>
-                            <Option value="Idle">Idle</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="platform" label="Platform" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="PC">PC</Option>
-                            <Option value="PlayStation">PlayStation</Option>
-                            <Option value="Xbox">Xbox</Option>
-                            <Option value="Nintendo">Nintendo</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={isUpdating}>
-                            Update Game
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                    <div className="overflow-x-auto">
+                        <Table
+                            dataSource={games}
+                            columns={columns}
+                            rowKey="_id"
+                            scroll={{ x: 'max-content' }}
+                            pagination={{
+                                responsive: true,
+                                position: ['bottomCenter'],
+                                showSizeChanger: true,
+                                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                                className: 'px-4'
+                            }}
+                        />
+                    </div>
+                </Card>
+
+                <Modal
+                    title="Add New Game"
+                    open={isModalVisible}
+                    onCancel={() => setIsModalVisible(false)}
+                    footer={null}
+                    width="90%"
+                    className="responsive-modal"
+                >
+                    <Form
+                        form={form}
+                        onFinish={handleAddGame}
+                        layout="vertical"
+                        className="space-y-4"
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+                                <Input type="number" />
+                            </Form.Item>
+                        </div>
+
+                        <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+                            <Input.TextArea rows={4} />
+                        </Form.Item>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="systemRequirements" label="System Requirements" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="videoTrailerUrl" label="Video Trailer URL" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="genre" label="Genre" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="FPS">FPS</Option>
+                                    <Option value="RPG">RPG</Option>
+                                    <Option value="Action">Action</Option>
+                                    <Option value="Adventure">Adventure</Option>
+                                    <Option value="Simulation">Simulation</Option>
+                                    <Option value="Strategy">Strategy</Option>
+                                    <Option value="Sports">Sports</Option>
+                                    <Option value="Horror">Horror</Option>
+                                    <Option value="Puzzle">Puzzle</Option>
+                                    <Option value="Idle">Idle</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item name="platform" label="Platform" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="PC">PC</Option>
+                                    <Option value="PlayStation">PlayStation</Option>
+                                    <Option value="Xbox">Xbox</Option>
+                                    <Option value="Nintendo">Nintendo</Option>
+                                </Select>
+                            </Form.Item>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item
+                                name="coverPhotoUrl"
+                                label="Cover Photo"
+                                rules={[{ required: true, message: "Please upload a cover photo!" }]}
+                            >
+                                <Upload
+                                    beforeUpload={() => false}
+                                    listType="picture-card"
+                                    fileList={coverPhotoFileList}
+                                    onChange={handleCoverPhotoChange}
+                                    className="upload-list-inline"
+                                >
+                                    {coverPhotoFileList.length >= 1 ? null : (
+                                        <div>
+                                            <PlusOutlined />
+                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                        </div>
+                                    )}
+                                </Upload>
+                            </Form.Item>
+                            <Form.Item
+                                name="fileUrl"
+                                label="Game File (.exe)"
+                                rules={[{ required: true, message: "Please upload a .exe file!" }]}
+                            >
+                                <Upload
+                                    beforeUpload={() => false}
+                                    listType="text"
+                                    fileList={exeFileList}
+                                    onChange={handleExeFileChange}
+                                    className="upload-list-inline"
+                                >
+                                    {exeFileList.length >= 1 ? null : (
+                                        <Button icon={<PlusOutlined />}>Upload Game File</Button>
+                                    )}
+                                </Upload>
+                            </Form.Item>
+                        </div>
+
+                        <Form.Item className="flex justify-end">
+                            <Button type="primary" htmlType="submit" loading={isCreating}>
+                                Add Game
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+
+                <Modal
+                    title="Update Game"
+                    open={isUpdateModalVisible}
+                    onCancel={() => setIsUpdateModalVisible(false)}
+                    footer={null}
+                    width="90%"
+                    className="responsive-modal"
+                >
+                    <Form
+                        form={form}
+                        initialValues={selectedGame || {}}
+                        onFinish={handleUpdateGame}
+                        layout="vertical"
+                        className="space-y-4"
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+                                <Input type="number" />
+                            </Form.Item>
+                        </div>
+
+                        <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+                            <Input.TextArea rows={4} />
+                        </Form.Item>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="systemRequirements" label="System Requirements" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="videoTrailerUrl" label="Video Trailer URL" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item name="genre" label="Genre" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="FPS">FPS</Option>
+                                    <Option value="RPG">RPG</Option>
+                                    <Option value="Action">Action</Option>
+                                    <Option value="Adventure">Adventure</Option>
+                                    <Option value="Simulation">Simulation</Option>
+                                    <Option value="Strategy">Strategy</Option>
+                                    <Option value="Sports">Sports</Option>
+                                    <Option value="Horror">Horror</Option>
+                                    <Option value="Puzzle">Puzzle</Option>
+                                    <Option value="Idle">Idle</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item name="platform" label="Platform" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="PC">PC</Option>
+                                    <Option value="PlayStation">PlayStation</Option>
+                                    <Option value="Xbox">Xbox</Option>
+                                    <Option value="Nintendo">Nintendo</Option>
+                                </Select>
+                            </Form.Item>
+                        </div>
+
+                        <Form.Item className="flex justify-end">
+                            <Button type="primary" htmlType="submit" loading={isUpdating}>
+                                Update Game
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+
+                <style jsx global>{`
+                    .responsive-modal {
+                        max-width: 90vw !important;
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .responsive-modal {
+                            max-width: 800px !important;
+                        }
+                    }
+                    
+                    .upload-list-inline .ant-upload-list-item {
+                        margin-top: 8px;
+                    }
+                    
+                    .ant-table {
+                        overflow-x: auto;
+                    }
+
+                    @media (max-width: 640px) {
+                        .ant-table-cell {
+                            padding: 8px !important;
+                        }
+                        
+                        .ant-card-head-title {
+                            padding: 12px 0 !important;
+                        }
+                        
+                        .ant-statistic-title {
+                            font-size: 14px !important;
+                        }
+                        
+                        .ant-statistic-content {
+                            font-size: 20px !important;
+                        }
+                    }
+                `}</style>
+            </div>
         </div>
     );
 };

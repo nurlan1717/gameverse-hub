@@ -27,9 +27,9 @@ export const gameApi = createApi({
     }),
 
     getGames: builder.query({
-      query: ({ limit, sort, freeWeekly }) => ({
+      query: ({ limit, sort, freeWeekly, genre }) => ({
         url: 'games',
-        params: { limit, sort, freeWeekly },
+        params: { limit, sort, freeWeekly, genre },
       }),
     }),
 
@@ -102,7 +102,7 @@ export const gameApi = createApi({
     }),
     rateGame: builder.mutation({
       query: ({ gameId, userId, rating }) => ({
-        url: `/games/${gameId}/rate`, 
+        url: `/games/${gameId}/rate`,
         method: 'POST',
         body: { userId, rating },
       }),

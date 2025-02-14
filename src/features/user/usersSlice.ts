@@ -135,6 +135,7 @@ export const userApi = createApi({
         method: 'POST',
         body: credentials,
       }),
+      invalidatesTags: ['User'],
     }),
 
     verifyUser: builder.query<any, string>({
@@ -147,6 +148,7 @@ export const userApi = createApi({
         method: 'POST',
         body: payload,
       }),
+      invalidatesTags: ['User'],
     }),
 
     resetPassword: builder.mutation<any, { token: string; password: string }>({
@@ -155,6 +157,7 @@ export const userApi = createApi({
         method: 'POST',
         body: { password },
       }),
+      invalidatesTags: ['User'],
     }),
 
     updateUserInfo: builder.mutation<any, { id: string; data: Record<string, any> }>({
@@ -163,6 +166,7 @@ export const userApi = createApi({
         method: 'PUT',
         body: data,
       }),
+      invalidatesTags: ['User'],
     }),
 
     deleteUserProfileImage: builder.mutation<any, string>({
@@ -170,13 +174,16 @@ export const userApi = createApi({
         url: `users/users/${id}/image`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['User'],
     }),
 
-    banAccount: builder.mutation<any, string>({
-      query: (id) => ({
+    banAccount: builder.mutation({
+      query: ({ id, duration }) => ({
         url: `users/ban-account/${id}`,
-        method: 'PUT',
+        method: "PUT",
+        body: { duration },
       }),
+      invalidatesTags: ['User'],
     }),
 
     unbanAccount: builder.mutation<any, string>({
@@ -184,6 +191,7 @@ export const userApi = createApi({
         url: `users/unban-account/${id}`,
         method: 'PUT',
       }),
+      invalidatesTags: ['User'],
     }),
 
     updatePassword: builder.mutation<any, { id: string; password: string }>({
@@ -192,6 +200,7 @@ export const userApi = createApi({
         method: 'PUT',
         body: { password },
       }),
+      invalidatesTags: ['User'],
     }),
 
     getWishlist: builder.query<WishlistItem[], void>({
@@ -269,6 +278,14 @@ export const userApi = createApi({
         body: payload,
       }),
     }),
+    approveDeveloper: builder.mutation({
+      query: (id) => ({
+        url: `users/approve/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ['User'],
+    }),
+
   }),
 });
 
@@ -300,4 +317,5 @@ export const {
   useGetUserBalanceQuery,
   useDeductBalanceMutation,
   useAddToLibraryMutation,
+  useApproveDeveloperMutation
 } = userApi;

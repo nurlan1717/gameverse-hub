@@ -66,7 +66,7 @@ const TournamentCard = ({ tournament }: { tournament: any }) => (
             </div>
             <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                <span>{tournament.participants.length} Players</span>
+                <span>{tournament.length} Players</span>
             </div>
         </div>
         <button className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors">

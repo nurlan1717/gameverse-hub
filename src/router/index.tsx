@@ -14,7 +14,6 @@ import Games from "../pages/Client/Games/Games";
 import Details from "../pages/Client/Details/Details";
 import Home from "../pages/Client/Home/Home";
 
-import AdminPage from "../pages/Admin/AdminPage/AdminPage";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 
 import Register from "../layouts/public/Register/Register";
@@ -43,6 +42,7 @@ const AppRouter = () => {
                 <Route element={<ClientLayouts />}>
                     <Route index element={<Home />} />
                     <Route path="/team" element={<Teams />} />
+                    <Route path="/games" element={<Games />} />
                     <Route path="/games/:id" element={<Details />} />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/news" element={<News />} />
@@ -71,7 +71,6 @@ const AppRouter = () => {
                     <Route element={<ClientLayouts />}>
                         <Route path="/wishlist" element={<WishlistPage />} />
                         <Route path="/basket" element={<BasketPage />} />
-                        <Route path="/games" element={<Games />} />
                     </Route>
                 </Route>
 
@@ -87,7 +86,6 @@ const AppRouter = () => {
                 {/* Admin Routes */}
                 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
                     <Route path="/admin/*" element={<AdminLayouts />}>
-                        <Route path="home" element={<AdminPage />} />
                         <Route path="dashboard" element={<Dashboard />} />
                     </Route>
                 </Route>

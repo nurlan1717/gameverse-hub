@@ -40,7 +40,7 @@ const TournamentCard = ({ tournament }: { tournament: any }) => {
                     </div>
                     <div className="flex items-center gap-2 text-gray-400">
                         <Users className="w-4 h-4" />
-                        <span>{tournament.participants.length} Participants</span>
+                        <span>{tournament.length} Participants</span>
                     </div>
                 </div>
 
@@ -94,7 +94,6 @@ const Tournaments = () => {
             animate={{ opacity: 1, y: 0 }}
             className="min-h-screen bg-[#101014] py-12">
             <div className="container mx-auto px-4">
-                {/* Hero Section */}
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center mb-4">
                         <Trophy className="w-12 h-12 text-indigo-500" />

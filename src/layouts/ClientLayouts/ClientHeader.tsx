@@ -78,6 +78,15 @@ const ClientHeader = () => {
                             Teams
                         </NavLink>
                         <NavLink
+                            to="/tournament"
+                            className={({ isActive }) =>
+                                `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                }`
+                            }
+                        >
+                            Tournaments
+                        </NavLink>
+                        <NavLink
                             to="/chat"
                             className={({ isActive }) =>
                                 `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
@@ -117,6 +126,9 @@ const ClientHeader = () => {
                         </Link>
                         <Link to="/team" className="text-gray-200 hover:text-white transition-colors block">
                             Teams
+                        </Link>
+                        <Link to="/tournament" className="text-gray-200 hover:text-white transition-colors block">
+                            Tournaments
                         </Link>
                         <Link to="/chat" className="text-gray-200 hover:text-white transition-colors block">
                             Chat

@@ -38,9 +38,9 @@ const Login = () => {
                 toast.error("Please verify your email and wait for admin approval!.");
                 return;
             }
-            Cookies.set("token", response.token, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-            Cookies.set("role", response.data.role, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
-            Cookies.set("id", response.data.id, { expires: 7, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("token", response.token, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("role", response.data.role, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+            Cookies.set("id", response.data.id, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
 
             navigate("/");
             window.location.reload();
@@ -59,8 +59,6 @@ const Login = () => {
             setLoading(false);
         }
     };
-
-
 
     const handleSocialLogin = async (provider: "google" | "facebook") => {
         try {

@@ -3,15 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { User, Mail, Lock, ShieldCheck, Building, Globe, CheckCircle } from "lucide-react";
-import { BASE_URL } from "../../../constants/api";
-import axios from "axios";
+import { User, Mail, Lock, ShieldCheck, Building, Globe, CheckCircle, LogIn } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRegisterDeveloperMutation } from "../../../features/user/usersSlice";
 
 const DeveloperRegister = () => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [registerDeveloper] = useRegisterDeveloperMutation();
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -37,21 +37,22 @@ const DeveloperRegister = () => {
         }),
         onSubmit: async (values) => {
             setLoading(true);
-            setError("");
-
             try {
                 const { confirmPassword, ...postData } = values;
-                await axios.post(`${BASE_URL}/api/users/dev/register`, postData);
+                await registerDeveloper(postData).unwrap();
+                toast.success("Registered successfully! Check your email for verification and wait for admin approval.");
                 setSuccess(true);
             } catch (err) {
-                console.log(err);
-                setError("Registration failed");
+                if (err?.data?.message) {
+                    toast.error(err.data.message);
+                } else {
+                    toast.error("Registration failed. Please try again.");
+                }
             } finally {
                 setLoading(false);
             }
         },
     });
-
 
     useEffect(() => {
         if (Cookies.get("token")) {
@@ -65,14 +66,18 @@ const DeveloperRegister = () => {
                 {success ? (
                     <div className="text-center text-white">
                         <CheckCircle size={50} className="text-green-500 mx-auto mb-4" />
-                        <h2 className="text-2xl font-semibold">Verify Your Account And wait for the admin to approve it.</h2>
-                        <p className="mt-2 text-gray-400">We've sent a verification link to your email.</p>
+                        <h2 className="text-2xl font-semibold">Verify Your Account</h2>
+                        <p className="mt-2 text-gray-400">Check your email for verification and wait for admin approval.</p>
+                        <button
+                            onClick={() => navigate("/login")}
+                            className="w-full mt-5 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition duration-300 font-semibold shadow-md flex items-center justify-center gap-2"
+                        >
+                            <LogIn size={20} /> Login
+                        </button>
                     </div>
                 ) : (
                     <>
                         <h2 className="text-white text-2xl font-semibold text-center mb-4">Developer Registration</h2>
-                        {error && <p className="text-red-400 text-center mb-4">{error}</p>}
-
                         <form onSubmit={formik.handleSubmit} className="space-y-4">
                             {[...
                                 [
@@ -117,11 +122,7 @@ const DeveloperRegister = () => {
                     </>
                 )}
             </div>
-            <ToastContainer
-                position="bottom-right"
-                autoClose={3000}
-                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
-            />
+            <ToastContainer position="bottom-right" autoClose={3000} toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }} />
         </div>
     );
 };

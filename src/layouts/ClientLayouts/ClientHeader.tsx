@@ -115,6 +115,17 @@ const ClientHeader = () => {
                                 Panel
                             </NavLink>
                         )}
+                        {role === "admin" && (
+                            <NavLink
+                                to="/admin/dashboard"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Admin
+                            </NavLink>
+                        )}
                     </nav>
 
                     <nav className={`sm:hidden w-full ${isMenuOpen ? 'block' : 'hidden'} space-y-4 text-center`}>
@@ -145,6 +156,17 @@ const ClientHeader = () => {
                                 }
                             >
                                 Panel
+                            </NavLink>
+                        )}
+                        {role === "admin" && (
+                            <NavLink
+                                to="/admin/dashboard"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Admin
                             </NavLink>
                         )}
                     </nav>

@@ -194,11 +194,11 @@ export const userApi = createApi({
       invalidatesTags: ['User'],
     }),
 
-    updatePassword: builder.mutation<any, { id: string; password: string }>({
-      query: ({ id, password }) => ({
-        url: `users/update-password/${id}`,
+    updatePassword: builder.mutation<any, { oldPassword: string, password: string, confirmPassword: string }>({
+      query: ({ oldPassword, password, confirmPassword }) => ({
+        url: `users/update-password`,
         method: 'PUT',
-        body: { password },
+        body: { oldPassword, password, confirmPassword },
       }),
       invalidatesTags: ['User'],
     }),
@@ -285,7 +285,21 @@ export const userApi = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-
+    requestTopup: builder.mutation({
+      query: (body) => ({
+        url: 'users/topup/request',
+        method: 'POST',
+        body,
+      }),
+    }),
+    verifyTopup: builder.mutation({
+      query: (body) => ({
+        url: 'users/topup/verify',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -317,5 +331,7 @@ export const {
   useGetUserBalanceQuery,
   useDeductBalanceMutation,
   useAddToLibraryMutation,
-  useApproveDeveloperMutation
+  useApproveDeveloperMutation,
+  useRequestTopupMutation,
+  useVerifyTopupMutation
 } = userApi;

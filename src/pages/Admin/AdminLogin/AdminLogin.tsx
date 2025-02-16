@@ -10,7 +10,7 @@ import { setCredentials } from "../../../features/auth/authSlice";
 
 const STATIC_ADMIN = {
     username: "nurlan17",
-    password: "nurlan1717", 
+    password: "Nurlan7676", 
 };
 
 const AdminLogin = () => {

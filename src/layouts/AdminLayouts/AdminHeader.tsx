@@ -104,15 +104,15 @@ const AdminHeader = () => {
                         >
                             About
                         </NavLink>
-                        {role === "developer" && (
+                        {role === "admin" && (
                             <NavLink
-                                to="/dev"
+                                to="/admin/dashboard"
                                 className={({ isActive }) =>
                                     `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
                                     }`
                                 }
                             >
-                                Panel
+                                Admin
                             </NavLink>
                         )}
                     </nav>
@@ -136,15 +136,15 @@ const AdminHeader = () => {
                         <Link to="/about" className="text-gray-200 hover:text-white transition-colors block">
                             About
                         </Link>
-                        {role === "developer" && (
+                        {role === "admin" && (
                             <NavLink
-                                to="/dev"
+                                to="/admin/dashboard"
                                 className={({ isActive }) =>
                                     `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
                                     }`
                                 }
                             >
-                                Panel
+                                Admin
                             </NavLink>
                         )}
                     </nav>

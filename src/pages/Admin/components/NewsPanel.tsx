@@ -1,19 +1,76 @@
-import { Table, Button, Card, Row, Col, Statistic, Space } from 'antd';
+import { Table, Button, Card, Row, Col, Statistic, Space, Form, Input, Modal, Select, Upload } from 'antd';
 import { Pie } from '@ant-design/plots';
-import { EditOutlined, DeleteOutlined, NotificationOutlined } from '@ant-design/icons';
-import { useCreateGameNewsMutation, useDeleteGameNewsMutation, useUpdateGameNewsMutation } from '../../../features/gamenews/gamenews';
+import { EditOutlined, DeleteOutlined, NotificationOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { useCreateGameNewsMutation, useDeleteGameNewsMutation, useGetGameNewsQuery, useUpdateGameNewsMutation } from '../../../features/gamenews/gamenews';
+import { useState } from 'react';
+
+const { Option } = Select;
 
 const NewsPanel = () => {
+    const [form] = Form.useForm();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedNews, setSelectedNews] = useState(null);
+    const [fileList, setFileList] = useState<any[]>([]);
+
+    const { data: news, isLoading } = useGetGameNewsQuery({});
     const [createGameNews] = useCreateGameNewsMutation();
     const [updateGameNews] = useUpdateGameNewsMutation();
     const [deleteGameNews] = useDeleteGameNewsMutation();
 
-    const newsMetricsData = [
-        { type: 'Game Updates', value: 35 },
-        { type: 'Tournament News', value: 25 },
-        { type: 'Community Updates', value: 20 },
-        { type: 'Patch Notes', value: 15 },
-    ];
+    const allNews = news ? [...news.featured, ...news.trending, ...news.breaking] : [];
+
+    const calculateNewsDistribution = () => {
+        return [
+            { type: 'Featured', value: news?.featured.length || 0 },
+            { type: 'Trending', value: news?.trending.length || 0 },
+            { type: 'Breaking', value: news?.breaking.length || 0 },
+        ];
+    };
+
+    const handleCreateOrUpdateNews = async (values: any) => {
+        try {
+            const formData = new FormData();
+
+            Object.keys(values).forEach((key) => {
+                formData.append(key, values[key]);
+            });
+
+            if (fileList.length > 0) {
+                formData.append("image", fileList[0].originFileObj);
+            }
+
+            if (selectedNews) {
+                await updateGameNews({ id: selectedNews._id, formData }).unwrap();
+            } else {
+                await createGameNews(formData).unwrap();
+            }
+
+            setIsModalVisible(false);
+            form.resetFields();
+            setSelectedNews(null);
+            setFileList([]);
+        } catch (error) {
+            console.error("Failed to save news:", error);
+        }
+    };
+
+
+    const handleDelete = (id: any) => {
+        Modal.confirm({
+            title: "Are you sure?",
+            content: "Do you really want to delete this news article? This action cannot be undone.",
+            okText: "Yes, Delete",
+            okType: "danger",
+            cancelText: "Cancel",
+            onOk: () => deleteGameNews(id),
+        });
+    };
+
+    const handleEdit = (record: any) => {
+        setSelectedNews(record);
+        form.setFieldsValue(record);
+        setIsModalVisible(true);
+    };
 
     const columns = [
         {
@@ -28,8 +85,9 @@ const NewsPanel = () => {
         },
         {
             title: 'Published Date',
-            dataIndex: 'publishedDate',
-            key: 'publishedDate',
+            dataIndex: 'date',
+            key: 'date',
+            render: (date: any) => new Date(date).toLocaleDateString(),
         },
         {
             title: 'Status',
@@ -44,14 +102,14 @@ const NewsPanel = () => {
                     <Button
                         type="primary"
                         icon={<EditOutlined />}
-                        onClick={() => updateGameNews(record)}
+                        onClick={() => handleEdit(record)}
                     >
                         Edit
                     </Button>
                     <Button
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => deleteGameNews(record.id)}
+                        onClick={() => handleDelete(record._id)}
                     >
                         Delete
                     </Button>
@@ -60,58 +118,139 @@ const NewsPanel = () => {
         },
     ];
 
+    const uploadProps = {
+        onRemove: (file: any) => {
+            setFileList((prevList) => prevList.filter((item) => item.uid !== file.uid));
+        },
+        beforeUpload: (file: any) => {
+            setFileList([file]);
+            return false;
+        },
+        onChange: ({ fileList }) => {
+            setFileList(fileList);
+        },
+        fileList,
+    };
+
     return (
         <div>
             <Row gutter={[16, 16]}>
-                <Col span={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Card>
                         <Statistic
                             title="Total News Articles"
-                            value={95}
+                            value={allNews.length}
                             prefix={<NotificationOutlined />}
                         />
                     </Card>
                 </Col>
-                <Col span={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Card>
                         <Statistic
                             title="Published Today"
-                            value={12}
+                            value={allNews.filter((item) => new Date(item.publishedDate).toDateString() === new Date().toDateString()).length}
                             valueStyle={{ color: '#3f8600' }}
                         />
                     </Card>
                 </Col>
-                <Col span={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Card>
                         <Statistic
                             title="Drafts"
-                            value={8}
+                            value={allNews.filter((item) => item.status === 'Draft').length}
                             valueStyle={{ color: '#faad14' }}
                         />
                     </Card>
                 </Col>
             </Row>
 
+            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+                <Col xs={24} md={12}>
+                    <Card>
+                        <h3>News Distribution</h3>
+                        <Pie
+                            data={calculateNewsDistribution()}
+                            angleField="value"
+                            colorField="type"
+                            radius={0.8}
+                            label={{ type: 'outer' }}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
             <Card style={{ marginTop: 16 }}>
-                <h3>News Distribution</h3>
-                <Pie
-                    data={newsMetricsData}
-                    angleField="value"
-                    colorField="type"
-                    radius={0.8}
-                    label={{
-                        type: 'outer',
-                    }}
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsModalVisible(true)}
+                    style={{ marginBottom: 16 }}
+                >
+                    Create News
+                </Button>
+                <Table
+                    columns={columns}
+                    dataSource={allNews}
+                    loading={isLoading}
+                    rowKey="id"
+                    scroll={{ x: true }}
                 />
             </Card>
 
-            <Card style={{ marginTop: 16 }}>
-                <Table
-                    columns={columns}
-                    dataSource={[]}
-                    rowKey="id"
-                />
-            </Card>
+            <Modal
+                title={selectedNews ? "Edit News" : "Create News"}
+                visible={isModalVisible}
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    form.resetFields();
+                    setSelectedNews(null);
+                    setFileList([]);
+                }}
+                onOk={() => form.submit()}
+            >
+                <Form form={form} onFinish={handleCreateOrUpdateNews} layout="vertical">
+                    <Form.Item
+                        name="title"
+                        label="Title"
+                        rules={[{ required: true, message: 'Please enter the title!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="description"
+                        label="Description"
+                        rules={[{ required: true, message: 'Please enter the description!' }]}
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item
+                        name="author"
+                        label="Author"
+                        rules={[{ required: true, message: 'Please enter the author!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="category"
+                        label="Category"
+                        rules={[{ required: true, message: 'Please select the category!' }]}
+                    >
+                        <Select>
+                            <Option value="featured">Featured News</Option>
+                            <Option value="trending">Trending News</Option>
+                            <Option value="breaking">Breaking News</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        label="Upload Image"
+                        rules={[{ required: true, message: 'Please upload an image!' }]}
+                    >
+                        <Upload {...uploadProps} listType="picture">
+                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                        </Upload>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 };

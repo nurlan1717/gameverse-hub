@@ -5,13 +5,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { User, Mail, Lock, ShieldCheck, Facebook, Chrome } from "lucide-react";
 import { BASE_URL } from "../../../constants/api";
-import { toast, ToastContainer } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify";
 import { useRegisterUserMutation } from "../../../features/user/usersSlice";
-
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const navigate = useNavigate();
     const [register] = useRegisterUserMutation();
 
@@ -34,58 +33,38 @@ const Register = () => {
         }),
         onSubmit: async (values) => {
             setLoading(true);
-            setError("");
 
             try {
                 const { confirmPassword, ...postData } = values;
-                const response = await register({ postData }).unwrap();
+                const response = await register(postData).unwrap();
 
-                Cookies.set("token", response.data.token, { expires: 7 });
-                Cookies.set("role", response.data.data.role, { expires: 7 });
-                navigate("/home");
+                toast.success("Registered successfully! Please verify your email.");
+
+                setTimeout(() => {
+                    navigate("/login");
+                }, 3000);
             } catch (err: any) {
-                console.log(err);
-                setError(err.message || "Registration failed");
+                if (err?.data?.message) {
+                    toast.error(err.data.message);
+                } else {
+                    toast.error("Registration failed. Please try again.");
+                }
             } finally {
                 setLoading(false);
             }
         },
     });
 
-    const handleSocialLogin = async (provider: "google" | "facebook") => {
-        try {
-            window.location.href = `${BASE_URL}/auth/${provider}`;
-        } catch (err: any) {
-            console.log(err);
-            setError("Login failed");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get("token");
-        const role = queryParams.get("role");
-
-        if (token && role) {
-            Cookies.set("token", token, { expires: 7 });
-            Cookies.set("role", role, { expires: 7 });
-
-            navigate("/");
-            toast.success("Login Successfully");
-        }
         if (Cookies.get("token")) {
             navigate("/");
         }
     }, []);
 
-
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
             <div className="bg-gray-800/70 backdrop-blur-md p-6 rounded-2xl shadow-lg w-full max-w-md border border-gray-700">
                 <h2 className="text-white text-2xl font-semibold text-center mb-4">Create Account</h2>
-                {error && <p className="text-red-400 text-center mb-4">{error}</p>}
 
                 <form onSubmit={formik.handleSubmit} className="space-y-4">
                     {[
@@ -125,10 +104,10 @@ const Register = () => {
                 </form>
 
                 <div className="flex justify-center gap-4 mt-4">
-                    <button onClick={() => handleSocialLogin("google")} className="text-white bg-red-600 p-2 rounded-full">
+                    <button onClick={() => window.location.href = `${BASE_URL}/auth/google`} className="text-white bg-red-600 p-2 rounded-full">
                         <Chrome size={24} />
                     </button>
-                    <button onClick={() => handleSocialLogin("facebook")} className="text-white bg-blue-600 p-2 rounded-full">
+                    <button onClick={() => window.location.href = `${BASE_URL}/auth/facebook`} className="text-white bg-blue-600 p-2 rounded-full">
                         <Facebook size={24} />
                     </button>
                 </div>
@@ -141,7 +120,8 @@ const Register = () => {
                 position="bottom-right"
                 autoClose={3000}
                 toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
-            />        </div>
+            />
+        </div>
     );
 };
 

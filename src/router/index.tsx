@@ -33,6 +33,8 @@ import UserPayment from "../pages/UserProfile/UserPayment.js";
 import UserLibrary from "../pages/UserProfile/UserLibrary.js";
 import News from "../pages/Client/News/News.js";
 import Tournaments from "../pages/Client/Tournament/Tournaments.js";
+import About from "../pages/Client/About/About.js";
+import UserPassword from "../pages/UserProfile/UserPassword.js";
 
 
 const AppRouter = () => {
@@ -47,6 +49,7 @@ const AppRouter = () => {
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/news" element={<News />} />
                     <Route path="/tournament" element={<Tournaments />} />
+                    <Route path="/about" element={<About />} />
                 </Route>
 
                 <Route element={<ProtectedRoute allowedRoles={["user", "developer", "admin"]} />}>
@@ -55,6 +58,7 @@ const AppRouter = () => {
                         <Route path="email" element={<UserEmailPage />} />
                         <Route path="payment" element={<UserPayment />} />
                         <Route path="library" element={<UserLibrary />} />
+                        <Route path="security" element={<UserPassword />} />
                     </Route>
                 </Route>
 

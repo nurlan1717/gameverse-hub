@@ -116,6 +116,17 @@ const UserHeader = () => {
                                 Panel
                             </NavLink>
                         )}
+                        {role === "admin" && (
+                            <NavLink
+                                to="/admin/dashboard"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Admin
+                            </NavLink>
+                        )}
                     </nav>
 
                     <nav className={`sm:hidden w-full ${isMenuOpen ? 'block' : 'hidden'} space-y-4 text-center`}>
@@ -137,6 +148,28 @@ const UserHeader = () => {
                         <Link to="/about" className="text-gray-200 hover:text-white transition-colors block">
                             About
                         </Link>
+                        {role === "developer" && (
+                            <NavLink
+                                to="/dev"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Panel
+                            </NavLink>
+                        )}
+                        {role === "admin" && (
+                            <NavLink
+                                to="/admin/dashboard"
+                                className={({ isActive }) =>
+                                    `transition-colors ${isActive ? "text-blue-500 drop-shadow-lg font-bold" : "text-gray-200 hover:text-blue-500"
+                                    }`
+                                }
+                            >
+                                Admin
+                            </NavLink>
+                        )}
                     </nav>
 
                     <div className="flex items-center space-x-4 w-full sm:w-auto justify-center sm:justify-end">

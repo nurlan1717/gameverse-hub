@@ -65,13 +65,13 @@ export const gameApi = createApi({
     }),
 
     fetchPendingGames: builder.query<Game[], void>({
-      query: () => `${ADMIN_URL_BASE}admin/games/pending`,
+      query: () => `${ADMIN_URL_BASE}api/games/admin/games/pending`,
       providesTags: ["PendingGames"],
     }),
 
     approveGame: builder.mutation<{ id: string }, string>({
       query: (gameId) => ({
-        url: `${ADMIN_URL_BASE}admin/games/${gameId}/approve`,
+        url: `${ADMIN_URL_BASE}api/games/admin/games/${gameId}/approve`,
         method: "POST",
       }),
       invalidatesTags: ["PendingGames", "Games"],
@@ -79,7 +79,7 @@ export const gameApi = createApi({
 
     rejectGame: builder.mutation<{ id: string }, string>({
       query: (gameId) => ({
-        url: `${ADMIN_URL_BASE}admin/games/${gameId}/reject`,
+        url: `${ADMIN_URL_BASE}api/games/admin/games/${gameId}/reject`,
         method: "POST",
       }),
       invalidatesTags: ["PendingGames"],

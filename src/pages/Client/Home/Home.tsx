@@ -17,9 +17,9 @@ const Home = () => {
   return (
     <>
       <motion.div
-        initial={{ scale: 0.2, filter: "blur(10px)", opacity: 0 }}
-        animate={{ scale: 1, filter: "blur(0px)", opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
         className="relative w-full h-[500px] md:h-[600px] flex items-center justify-center text-white">
         <div className="absolute inset-0 bg-[#101014] bg-opacity-90">
           <div className="container mx-auto px-4 mt-8">

@@ -13,6 +13,7 @@ import {
 import { useGetUserByIdQuery } from "../../../features/user/usersSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -246,32 +247,37 @@ const DashboardDev = () => {
         <div className="min-h-screen bg-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-14 lg:px-12 py-28">
                 <ToastContainer position="bottom-right" autoClose={3000} />
-                
-                {/* Profile Card */}
+
                 <Card className="mb-6 shadow-md">
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="flex-shrink-0">
-                            <UserOutlined className="text-4xl text-blue-500" />
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-4 gap-100 sm:space-y-0 sm:space-x-4">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                            <div className="flex-shrink-0">
+                                <UserOutlined className="text-4xl text-blue-500" />
+                            </div>
+                            <div className="text-center sm:text-left">
+                                <h2 className="text-2xl font-semibold">{user?.data.username}</h2>
+                                <p className="text-gray-600 flex items-center justify-center sm:justify-start space-x-2">
+                                    <MailOutlined />
+                                    <span>{user?.data.email}</span>
+                                </p>
+                            </div>
                         </div>
-                        <div className="text-center sm:text-left">
-                            <h2 className="text-2xl font-semibold">{user?.data.username}</h2>
-                            <p className="text-gray-600 flex items-center justify-center sm:justify-start space-x-2">
-                                <MailOutlined />
-                                <span>{user?.data.email}</span>
-                            </p>
+                        <div className="sm:text-left">
+                            <Link to="/dev/tournament">
+                                Tournament
+                            </Link>
                         </div>
                     </div>
                 </Card>
 
-                {/* Statistics Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <Card className="shadow-md">
                         <Statistic title="Total Games" value={games.length} />
                     </Card>
                     <Card className="shadow-md">
-                        <Statistic 
-                            title="Total Sales" 
-                            value={games.reduce((acc, game) => acc + game.sales, 0)} 
+                        <Statistic
+                            title="Total Sales"
+                            value={games.reduce((acc, game) => acc + game.sales, 0)}
                         />
                     </Card>
                     <Card className="shadow-md">
@@ -329,8 +335,8 @@ const DashboardDev = () => {
                     title={
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                             <h2 className="text-xl font-semibold">Games</h2>
-                            <Button 
-                                type="primary" 
+                            <Button
+                                type="primary"
                                 onClick={() => setIsModalVisible(true)}
                                 className="w-full sm:w-auto"
                             >

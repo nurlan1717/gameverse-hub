@@ -27,7 +27,6 @@ import ProfileLayouts from "../layouts/UserProfile/ProfileLayouts.js";
 import Chat from "../components/Chat/Chat.js";
 import DashboardDev from "../pages/Dev/DashboardDev/DashboardDev.js";
 import Stats from "../pages/Dev/stats/Stats.js";
-import GamesDev from "../pages/Dev/Games/Games.js";
 import UserEmailPage from "../pages/UserProfile/UserEmailPage.js";
 import UserPayment from "../pages/UserProfile/UserPayment.js";
 import UserLibrary from "../pages/UserProfile/UserLibrary.js";
@@ -35,6 +34,7 @@ import News from "../pages/Client/News/News.js";
 import Tournaments from "../pages/Client/Tournament/Tournaments.js";
 import About from "../pages/Client/About/About.js";
 import UserPassword from "../pages/UserProfile/UserPassword.js";
+import DevTournament from "../pages/Dev/Games/DevTournament.js";
 
 
 const AppRouter = () => {
@@ -83,7 +83,7 @@ const AppRouter = () => {
                     <Route path="/dev" element={<DevLayouts />}>
                         <Route index element={<DashboardDev />} />
                         <Route path="stats" element={<Stats />} />
-                        <Route path="games" element={<GamesDev />} />
+                        <Route path="tournament" element={<DevTournament />} />
                     </Route>
                 </Route>
 

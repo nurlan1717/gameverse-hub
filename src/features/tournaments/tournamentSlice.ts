@@ -3,15 +3,6 @@ import Cookies from 'js-cookie';
 import { BASE_URL } from '../../constants/api';
 
 
-interface Tournament {
-    _id: string;
-    name: string;
-    game: string;
-    startDate: string;
-    endDate: string;
-    participants: string[];
-}
-
 export const tournamentsApi = createApi({
     reducerPath: 'tournamentsApi',
     baseQuery: fetchBaseQuery({
@@ -26,21 +17,21 @@ export const tournamentsApi = createApi({
     }),
     tagTypes: ['Tournaments'],
     endpoints: (builder) => ({
-        getActiveTournaments: builder.query<Tournament[], void>({
+        getActiveTournaments: builder.query({
             query: () => '/active',
             providesTags: ['Tournaments'],
         }),
 
-        registerForTournament: builder.mutation<void, { tournamentId: string }>({
-            query: ({ tournamentId }) => ({
+        registerForTournament: builder.mutation({
+            query: ({ tournamentId, teamId }) => ({
                 url: '/register',
                 method: 'POST',
-                body: { tournamentId },
+                body: { tournamentId, teamId },
             }),
             invalidatesTags: ['Tournaments'],
         }),
 
-        createTournament: builder.mutation<Tournament, Omit<Tournament, '_id' | 'participants'>>({
+        createTournament: builder.mutation({
             query: (newTournament) => ({
                 url: '/',
                 method: 'POST',
@@ -49,18 +40,18 @@ export const tournamentsApi = createApi({
             invalidatesTags: ['Tournaments'],
         }),
 
-        updateTournament: builder.mutation<Tournament, Partial<Tournament> & { _id: string }>({
-            query: ({ _id, ...updates }) => ({
-                url: `/${_id}`,
+        updateTournament: builder.mutation({
+            query: ({ id, ...updates }) => ({
+                url: `/${id}`,
                 method: 'PUT',
                 body: updates,
             }),
             invalidatesTags: ['Tournaments'],
         }),
 
-        deleteTournament: builder.mutation<void, string>({
-            query: (tournamentId) => ({
-                url: `/${tournamentId}`,
+        deleteTournament: builder.mutation({
+            query: (id) => ({
+                url: `/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Tournaments'],

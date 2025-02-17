@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useForgotPasswordMutation, useResetPasswordMutation, useUpdatePasswordMutation } from '../../features/user/usersSlice';
+import { useEffect, useState } from 'react';
+import { useForgotPasswordMutation, useGetUserByIdQuery, useResetPasswordMutation, useUpdatePasswordMutation } from '../../features/user/usersSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ClipLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Mail, Key, ArrowLeft, RefreshCw } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const UserPassword = () => {
     const [email, setEmail] = useState('');
@@ -17,6 +18,12 @@ const UserPassword = () => {
     const [forgotPassword] = useForgotPasswordMutation();
     const [resetPassword] = useResetPasswordMutation();
     const [updatePassword] = useUpdatePasswordMutation();
+    const id = Cookies.get("id");
+    const { data: user } = useGetUserByIdQuery(id as string);
+
+    useEffect(() => {
+        setEmail(user.data.email)
+    }, [])
 
     const handleForgotPassword = async () => {
         if (!email) {
@@ -145,7 +152,6 @@ const UserPassword = () => {
                                     type="email"
                                     placeholder="Enter your email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
                                     className="pl-10 w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                 />
                             </div>

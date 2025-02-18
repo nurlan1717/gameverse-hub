@@ -3,6 +3,7 @@ export interface Tournament {
     name: string;
     startDate: string;
     endDate: string;
+    game: string;
     team: string;
     status: 'draft' | 'active' | 'completed';
     maxTeams: number;
@@ -13,6 +14,7 @@ export interface CreateTournamentInput {
     name: string;
     startDate: string;
     endDate: string;
+    game: string;
     maxTeams: number;
     description: string;
     team: string;

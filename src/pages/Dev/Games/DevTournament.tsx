@@ -18,11 +18,11 @@ function DevTournament() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    const { data: tournaments, isLoading, error } = useGetActiveTournamentsQuery();
+    const { data: tournaments, isLoading, error } = useGetActiveTournamentsQuery({});
     const [createTournament, { isLoading: isCreatingTournament }] = useCreateTournamentMutation();
     const [updateTournament, { isLoading: isUpdating }] = useUpdateTournamentMutation();
     const [deleteTournament, { isLoading: isDeleting }] = useDeleteTournamentMutation();
-
+    
     const handleSubmit = async (values: any) => {
         try {
             const formattedValues = {
@@ -133,7 +133,7 @@ function DevTournament() {
     ];
 
     if (error) {
-        return <div className="p-4 bg-red-50 text-red-700 rounded-lg">Error loading tournaments: {error.message}</div>;
+        return <div className="p-4 bg-red-50 text-red-700 rounded-lg">Error loading tournaments</div>;
     }
 
     return (

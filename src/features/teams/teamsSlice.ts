@@ -51,6 +51,13 @@ export const teamApi = createApi({
       }),
       invalidatesTags: ["Team"],
     }),
+    deleteTeam: builder.mutation({
+      query: (id) => ({
+        url: `/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Team"],
+    }),
   }),
 });
 
@@ -60,4 +67,5 @@ export const {
   useAddMemberMutation,
   useRemoveMemberMutation,
   useRegisterForTournamentMutation,
+  useDeleteTeamMutation,
 } = teamApi;

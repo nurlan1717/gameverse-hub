@@ -245,7 +245,7 @@ const DashboardDev = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-14 lg:px-12 py-28">
+            <div className="max-w-7xl mx-auto px-4 sm:px-14 lg:px-12 py-5">
                 <ToastContainer position="bottom-right" autoClose={3000} />
 
                 <Card className="mb-6 shadow-md">
@@ -261,11 +261,6 @@ const DashboardDev = () => {
                                     <span>{user?.data.email}</span>
                                 </p>
                             </div>
-                        </div>
-                        <div className="sm:text-left">
-                            <Link to="/dev/tournament">
-                                Tournament
-                            </Link>
                         </div>
                     </div>
                 </Card>

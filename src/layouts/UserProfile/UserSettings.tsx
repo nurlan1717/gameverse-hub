@@ -87,7 +87,7 @@ function UserSetting() {
   };
 
   return (
-    <div className="w-72 bg-white min-h-screen border-r border-gray-100 py-6 px-3">
+    <div className="w-full md:w-72 bg-white min-h-screen border-r border-gray-100 py-6 px-3">
       <div className="px-4 mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Settings</h2>
         <p className="text-sm text-gray-500 mt-1">Manage your account preferences</p>

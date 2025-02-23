@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
@@ -16,14 +17,20 @@ import {
     Settings,
     HelpCircle
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetBasketQuery } from '../../features/user/usersSlice';
+import { useSearchGamesByTitleQuery } from '../../features/games/gamesSlice';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const ClientHeader = () => {
     const navigate = useNavigate();
     const [logout] = useLogoutMutation();
-    const { data: basket } = useGetBasketQuery()
+    const { data: basket } = useGetBasketQuery();
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300);
+    const { data: games, isLoading } = useSearchGamesByTitleQuery(debouncedSearch, {
+        skip: !debouncedSearch || debouncedSearch.length < 2
+    });
     const userData = useSelector((state: RootState) => state.auth.user?.data);
     const token = Cookies.get("token");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,10 +38,15 @@ const ClientHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const role = Cookies.get("role");
     const profileRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
                 setIsProfileOpen(false);
+            }
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setIsSearchFocused(false);
             }
         };
 
@@ -50,6 +62,21 @@ const ClientHeader = () => {
         logout();
         window.location.reload();
         navigate("/");
+    };
+
+    const handleGameClick = (id: string) => {
+        navigate(`/games/${id}`);
+        setIsSearchFocused(false);
+        setSearchTerm('');
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+        setIsSearchFocused(true);
+    };
+
+    const handleSearchFocus = () => {
+        setIsSearchFocused(true);
     };
 
     const menuItems = [
@@ -191,7 +218,7 @@ const ClientHeader = () => {
                                                         Profile
                                                     </Link>
                                                     <Link
-                                                        to="/settings"
+                                                        to="/profile"
                                                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                                                     >
                                                         <Settings className="h-4 w-4" />
@@ -271,7 +298,7 @@ const ClientHeader = () => {
             <div className="bg-[#101014] pt-20">
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="relative w-full md:w-auto">
+                        <div className="relative w-full md:w-auto" ref={searchRef}>
                             <motion.div
                                 animate={{
                                     width: isSearchFocused ? "100%" : "240px",
@@ -282,15 +309,63 @@ const ClientHeader = () => {
                             >
                                 <input
                                     type="text"
-                                    placeholder="Search games, teams, tournaments..."
+                                    value={searchTerm}
+                                    placeholder="Search games"
                                     className="w-full bg-[#1a1a1f] text-white px-4 py-2 rounded-lg pl-10 outline-none transition-all duration-200"
-                                    onFocus={() => setIsSearchFocused(true)}
-                                    onBlur={() => setIsSearchFocused(false)}
+                                    onFocus={handleSearchFocus}
+                                    onChange={handleSearchChange}
                                 />
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                             </motion.div>
-                        </div>
 
+                            <AnimatePresence>
+                                {isSearchFocused && searchTerm && games?.data?.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute top-12 w-full bg-[#1a1a1f] rounded-lg shadow-lg py-2 border border-gray-800 max-h-[300px] overflow-y-auto z-50"
+                                    >
+                                        {isLoading ? (
+                                            <div className="px-4 py-2 text-sm text-gray-400">
+                                                Searching...
+                                            </div>
+                                        ) : (
+                                            games?.data?.map((game: any) => (
+                                                <div
+                                                    key={game._id}
+                                                    className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer"
+                                                    onClick={() => handleGameClick(game._id)}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        {game.thumbnail && (
+                                                            <img
+                                                                src={game.thumbnail}
+                                                                alt={game.title}
+                                                                className="w-8 h-8 object-cover rounded"
+                                                            />
+                                                        )}
+                                                        <div>
+                                                            <div className="font-medium">{game.title}</div>
+                                                            {game.price > 0 ? (
+                                                                <div className="text-xs text-[#26bbff]">
+                                                                    ${game.price}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="text-xs text-green-500">
+                                                                    Free
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                         <nav className="flex items-center gap-6 text-sm font-medium">
                             <NavLink
                                 to="/"
@@ -304,7 +379,7 @@ const ClientHeader = () => {
                                 Discover
                             </NavLink>
                             <NavLink
-                                to="/browse"
+                                to="/games"
                                 className={({ isActive }) =>
                                     `transition-colors ${isActive
                                         ? "text-white"

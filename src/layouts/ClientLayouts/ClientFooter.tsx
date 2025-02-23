@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 const ClientFooter = () => {
     const handleSubscribe = (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle newsletter subscription
     };
 
     return (

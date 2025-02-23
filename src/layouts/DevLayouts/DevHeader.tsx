@@ -191,7 +191,7 @@ const DevHeader = () => {
                             Profile
                           </Link>
                           <Link
-                            to="/settings"
+                            to="/profile"
                             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                           >
                             <Settings className="h-4 w-4" />

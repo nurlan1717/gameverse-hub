@@ -33,47 +33,23 @@ const menuItems = [
     path: "/profile/library"
   },
   {
-    name: "Epic Rewards",
+    name: "Game Rewards",
     icon: <Star size={20} strokeWidth={1.5} />,
     key: "rewards",
     path: "/profile/rewards"
   },
-  {
-    name: "Subscriptions",
-    icon: <CreditCard size={20} strokeWidth={1.5} />,
-    key: "subscriptions",
-    path: "/profile/subscriptions"
-  },
+  // {
+  //   name: "Subscriptions",
+  //   icon: <CreditCard size={20} strokeWidth={1.5} />,
+  //   key: "subscriptions",
+  //   path: "/profile/subscriptions"
+  // },
   {
     name: "Password & Security",
     icon: <Lock size={20} strokeWidth={1.5} />,
     key: "security",
     path: "/profile/security"
   },
-  {
-    name: "In-Game Currency",
-    icon: <Wallet size={20} strokeWidth={1.5} />,
-    key: "currency",
-    path: "/profile/currency"
-  },
-  {
-    name: "Parental Controls",
-    icon: <Shield size={20} strokeWidth={1.5} />,
-    key: "parental",
-    path: "/profile/parental"
-  },
-  {
-    name: "EULA History",
-    icon: <FileText size={20} strokeWidth={1.5} />,
-    key: "eula",
-    path: "/profile/eula"
-  },
-  {
-    name: "Apps & Accounts",
-    icon: <Settings size={20} strokeWidth={1.5} />,
-    key: "apps",
-    path: "/profile/apps"
-  }
 ];
 
 function UserSetting() {

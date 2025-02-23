@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Flame, Gamepad2, Users, Zap, Crown, Calendar, Star, AlertCircle } from 'lucide-react';
 import { useGetActiveTournamentsQuery } from '../../../features/tournaments/tournamentSlice';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 const SectionTitle = ({ title, icon: Icon }: { title: string; icon: any }) => (
     <div className="flex items-center gap-3 mb-8">
@@ -39,9 +40,17 @@ const FeaturedGameCard = ({ game }: { game: any }) => (
 const TournamentCard = ({ tournament }: { tournament: any }) => (
     <motion.div
         whileHover={{ scale: 1.02 }}
-        className="bg-[#1F1F23] p-4 rounded-lg shadow-lg">
-        <div className="flex justify-between items-start mb-4">
+        className="bg-[#1F1F23] p-4 rounded-lg overflow-hidden shadow-lg">
+        <div className="flex-c overflow-hidden justify-between items-start mb-4">
             <div>
+                <div className="relative w-full h-48 overflow-hidden">
+                    <img
+                        src={tournament.tournamentLogo || `https://source.unsplash.com/800x400/?${encodeURIComponent(tournament.game.toLowerCase())},gaming`}
+                        alt={tournament.name}
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F23] via-transparent to-transparent" />
+                </div>
                 <h3 className="text-lg font-bold text-white mb-1">{tournament.name}</h3>
                 <p className="text-sm text-gray-400">{tournament.game}</p>
             </div>
@@ -59,9 +68,9 @@ const TournamentCard = ({ tournament }: { tournament: any }) => (
                 <span className="text-sm">{tournament.length} Players</span>
             </div>
         </div>
-        <button className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors text-sm">
+        <Link to='/tournament' className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors text-sm">
             Register Now
-        </button>
+        </Link>
     </motion.div>
 );
 

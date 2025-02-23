@@ -38,6 +38,11 @@ export const gameApi = createApi({
       providesTags: ["Games"],
     }),
 
+    searchGamesByTitle: builder.query({
+      query: (title) => `games/search?title=${title}`,
+      providesTags: ["Games"],
+    }),
+
     createGame: builder.mutation<Game, FormData>({
       query: (gameData) => ({
         url: "games",
@@ -116,6 +121,7 @@ export const {
   useUpdateGameMutation,
   useDeleteGameMutation,
   useFetchPendingGamesQuery,
+  useSearchGamesByTitleQuery,
   useApproveGameMutation,
   useRejectGameMutation,
   useGetGamesQuery,

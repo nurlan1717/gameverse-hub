@@ -3,11 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { User, Mail, Lock, ShieldCheck, Facebook, Chrome } from "lucide-react";
-import { BASE_URL } from "../../../constants/api";
-import { toast, ToastContainer } from "react-toastify";
-import { useRegisterUserMutation } from "../../../features/user/usersSlice";
+import { User, Mail, Lock, ShieldCheck, Facebook, Chrome, Sparkles } from "lucide-react";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRegisterUserMutation } from "../../../features/user/usersSlice";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
@@ -33,13 +32,11 @@ const Register = () => {
         }),
         onSubmit: async (values) => {
             setLoading(true);
-
             try {
                 const { confirmPassword, ...postData } = values;
-                const response = await register(postData).unwrap();
-
+                await register(postData).unwrap();
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 toast.success("Registered successfully! Please verify your email.");
-
                 setTimeout(() => {
                     navigate("/login");
                 }, 3000);
@@ -59,68 +56,116 @@ const Register = () => {
         if (Cookies.get("token")) {
             navigate("/");
         }
-    }, []);
+    }, [navigate]);
+
+    const formFields = [
+        { name: "fullName", label: "Full Name", icon: <ShieldCheck size={20} /> },
+        { name: "username", label: "Username", icon: <User size={20} /> },
+        { name: "email", label: "Email", icon: <Mail size={20} />, type: "email" },
+        { name: "password", label: "Password", icon: <Lock size={20} />, type: "password" },
+        { name: "confirmPassword", label: "Confirm Password", icon: <Lock size={20} />, type: "password" },
+    ];
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
-            <div className="bg-gray-800/70 backdrop-blur-md p-6 rounded-2xl shadow-lg w-full max-w-md border border-gray-700">
-                <h2 className="text-white text-2xl font-semibold text-center mb-4">Create Account</h2>
-
-                <form onSubmit={formik.handleSubmit} className="space-y-4">
-                    {[
-                        { name: "fullName", label: "Full Name", icon: <ShieldCheck size={20} /> },
-                        { name: "username", label: "Username", icon: <User size={20} /> },
-                        { name: "email", label: "Email", icon: <Mail size={20} />, type: "email" },
-                        { name: "password", label: "Password", icon: <Lock size={20} />, type: "password" },
-                        { name: "confirmPassword", label: "Confirm Password", icon: <Lock size={20} />, type: "password" },
-                    ].map(({ name, label, icon, type = "text" }) => (
-                        <div key={name} className="relative">
-                            <label className="text-gray-300 block mb-1">{label}</label>
-                            <div className="flex items-center bg-gray-700 rounded-lg p-2">
-                                <span className="text-gray-400 mx-2">{icon}</span>
-                                <input
-                                    type={type}
-                                    {...formik.getFieldProps(name)}
-                                    className="w-full bg-transparent text-white outline-none px-2"
-                                    placeholder={`Enter your ${label.toLowerCase()}`}
-                                />
-                            </div>
-                            {formik.touched[name as keyof typeof formik.touched] &&
-                                formik.errors[name as keyof typeof formik.errors] && (
-                                    <p className="text-red-400 text-sm mt-1">
-                                        {formik.errors[name as keyof typeof formik.errors]}
-                                    </p>
-                                )}
-                        </div>
-                    ))}
-
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg transition duration-300 font-semibold shadow-md"
-                        disabled={loading}
-                    >
-                        {loading ? "Loading..." : "Register"}
-                    </button>
-                </form>
-
-                <div className="flex justify-center gap-4 mt-4">
-                    <button onClick={() => window.location.href = `${BASE_URL}/auth/google`} className="text-white bg-red-600 p-2 rounded-full">
-                        <Chrome size={24} />
-                    </button>
-                    <button onClick={() => window.location.href = `${BASE_URL}/auth/facebook`} className="text-white bg-blue-600 p-2 rounded-full">
-                        <Facebook size={24} />
-                    </button>
+        <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4 py-8">
+            <div className="max-w-md w-full">
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 mb-4">
+                        <Sparkles className="w-8 h-8 text-white" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
+                    <p className="text-gray-400">Join our amazing community</p>
                 </div>
 
-                <p className="text-gray-400 text-center mt-4 text-sm">
-                    Have an account? <Link to="/login" className="text-blue-400 hover:text-blue-300">Sign in</Link>
-                </p>
+                <div className="bg-[#1E293B] rounded-xl shadow-xl p-6 backdrop-blur-lg border border-gray-700/50">
+                    <form onSubmit={formik.handleSubmit} className="space-y-4">
+                        {formFields.map(({ name, label, icon, type = "text" }) => (
+                            <div key={name} className="group">
+                                <label className="text-gray-300 text-sm font-medium mb-1 block">
+                                    {label}
+                                </label>
+                                <div className={`
+                                    flex items-center bg-[#2D3B4F] rounded-lg p-2 transition-all duration-200
+                                    ${formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] ? 'ring-2 ring-red-500/50' : 'focus-within:ring-2 focus-within:ring-blue-500/50'}
+                                `}>
+                                    <span className="text-gray-400 mx-2 group-focus-within:text-blue-400">
+                                        {icon}
+                                    </span>
+                                    <input
+                                        type={type}
+                                        {...formik.getFieldProps(name)}
+                                        className="w-full bg-transparent text-white outline-none px-2 py-1.5"
+                                        placeholder={`Enter your ${label.toLowerCase()}`}
+                                    />
+                                </div>
+                                {formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] && (
+                                    <p className="text-red-400 text-sm mt-1 ml-1">{formik.errors[name as keyof typeof formik.errors]}</p>
+                                )}
+                            </div>
+                        ))}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`
+                                w-full mt-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg
+                                ${loading
+                                    ? 'bg-gray-600 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-blue-500/20'
+                                }
+                                text-white flex items-center justify-center gap-2
+                            `}
+                        >
+                            {loading ? (
+                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <User className="w-5 h-5" />
+                                    Create Account
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-700/50"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-[#1E293B] px-2 text-gray-400">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            className="flex-1 bg-[#2D3B4F] hover:bg-[#374151] text-white p-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-lg"
+                            onClick={() => window.location.href = `/auth/google`}
+                        >
+                            <Chrome className="w-5 h-5 text-red-400 group-hover:text-red-300" />
+                            <span className="font-medium">Google</span>
+                        </button>
+                        <button
+                            className="flex-1 bg-[#2D3B4F] hover:bg-[#374151] text-white p-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-lg"
+                            onClick={() => window.location.href = `/auth/facebook`}
+                        >
+                            <Facebook className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
+                            <span className="font-medium">Facebook</span>
+                        </button>
+                    </div>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-gray-400">
+                            Already have an account?{" "}
+                            <Link
+                                to="/login"
+                                className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
+                            >
+                                Sign in
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <ToastContainer
-                position="bottom-right"
-                autoClose={3000}
-                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
-            />
         </div>
     );
 };

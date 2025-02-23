@@ -101,7 +101,7 @@ const UserProfilePage = () => {
 
     return (
         <div className="bg-gray-100 pt-12 pb-12 rounded-2xl">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-4 sm:px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ const UserProfilePage = () => {
                 >
                     <div className="relative h-48 bg-gradient-to-r from-blue-600 to-[#26bbff]">
                         <div className="absolute inset-0 bg-black/20"></div>
-                        <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end space-x-6">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 flex flex-col sm:flex-row items-end space-y-4 sm:space-y-0 sm:space-x-6">
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -119,7 +119,7 @@ const UserProfilePage = () => {
                                 <img
                                     src={isEditing ? previewImage : currentUser?.profileImage}
                                     alt="Profile"
-                                    className="w-24 h-24 rounded-xl border-4 border-[#1a1a1f] object-cover"
+                                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-4 border-[#1a1a1f] object-cover"
                                 />
                                 {isEditing && (
                                     <label className="absolute bottom-0 right-0 bg-[#26bbff] p-2 rounded-lg cursor-pointer hover:bg-[#1f9fd8] transition-colors">
@@ -145,7 +145,7 @@ const UserProfilePage = () => {
                                             name="fullName"
                                             value={formData.fullName}
                                             onChange={handleInputChange}
-                                            className="bg-transparent text-2xl font-bold text-white border-b border-white/20 focus:border-white/50 outline-none w-full pb-1"
+                                            className="bg-transparent text-xl sm:text-2xl font-bold text-white border-b border-white/20 focus:border-white/50 outline-none w-full pb-1"
                                         />
                                     ) : (
                                         <motion.h1
@@ -153,7 +153,7 @@ const UserProfilePage = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            className="text-2xl font-bold text-white"
+                                            className="text-xl sm:text-2xl font-bold text-white"
                                         >
                                             {currentUser?.fullName}
                                         </motion.h1>
@@ -180,7 +180,7 @@ const UserProfilePage = () => {
                         </div>
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                         <AnimatePresence mode="wait">
                             {isEditing ? (
                                 <motion.form
@@ -278,7 +278,7 @@ const UserProfilePage = () => {
                             )}
                         </AnimatePresence>
 
-                        <div className="mt-8 flex gap-4">
+                        <div className="mt-8 flex flex-col sm:flex-row gap-4">
                             <Link
                                 to="/wishlist"
                                 className="flex-1 bg-[#2a2a2f] hover:bg-[#353539] text-white py-3 rounded-lg transition-colors flex items-center justify-center gap-2"

@@ -34,7 +34,8 @@ import News from "../pages/Client/News/News.js";
 import Tournaments from "../pages/Client/Tournament/Tournaments.js";
 import About from "../pages/Client/About/About.js";
 import UserPassword from "../pages/UserProfile/UserPassword.js";
-import DevTournament from "../pages/Dev/Games/DevTournament.js";
+import DevTournament from "../pages/Dev/Tournament/DevTournament.js";
+import UserRewards from "../pages/UserProfile/UserRewards.js";
 
 
 const AppRouter = () => {
@@ -59,6 +60,8 @@ const AppRouter = () => {
                         <Route path="payment" element={<UserPayment />} />
                         <Route path="library" element={<UserLibrary />} />
                         <Route path="security" element={<UserPassword />} />
+                        <Route path="rewards" element={<UserRewards />} />
+
                     </Route>
                 </Route>
 

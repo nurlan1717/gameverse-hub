@@ -1,4 +1,4 @@
-import { Table, Button, Card, Row, Col, Statistic, Space, Form, Input, Modal, Select, Upload } from 'antd';
+import { Table, Button, Card, Row, Col, Statistic, Space, Form, Input, Modal, Select, Upload, message } from 'antd';
 import { Pie } from '@ant-design/plots';
 import { EditOutlined, DeleteOutlined, NotificationOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useCreateGameNewsMutation, useDeleteGameNewsMutation, useGetGameNewsQuery, useUpdateGameNewsMutation } from '../../../features/gamenews/gamenews';
@@ -9,28 +9,31 @@ const { Option } = Select;
 const NewsPanel = () => {
     const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedNews, setSelectedNews] = useState(null);
+    const [selectedNews, setSelectedNews] = useState<{ _id: string } | null>(null);
     const [fileList, setFileList] = useState<any[]>([]);
 
-    const { data: news, isLoading } = useGetGameNewsQuery({});
+    const { data: news, isLoading } = useGetGameNewsQuery();
     const [createGameNews] = useCreateGameNewsMutation();
     const [updateGameNews] = useUpdateGameNewsMutation();
     const [deleteGameNews] = useDeleteGameNewsMutation();
 
-    const allNews = news ? [...news.featured, ...news.trending, ...news.breaking] : [];
+    const allNews = news ? [
+        ...(news?.featured || []),
+        ...(news?.trending || []),
+        ...(news?.breaking || []),
+    ] : [];
 
     const calculateNewsDistribution = () => {
         return [
-            { type: 'Featured', value: news?.featured.length || 0 },
-            { type: 'Trending', value: news?.trending.length || 0 },
-            { type: 'Breaking', value: news?.breaking.length || 0 },
+            { type: 'Featured', value: news?.featured?.length },
+            { type: 'Trending', value: news?.trending?.length },
+            { type: 'Breaking', value: news?.breaking?.length },
         ];
     };
 
     const handleCreateOrUpdateNews = async (values: any) => {
         try {
             const formData = new FormData();
-
             Object.keys(values).forEach((key) => {
                 formData.append(key, values[key]);
             });
@@ -38,11 +41,19 @@ const NewsPanel = () => {
             if (fileList.length > 0) {
                 formData.append("image", fileList[0].originFileObj);
             }
-
+            for (const pair of formData.entries()) {
+                console.log(pair[0], pair[1]);
+            }
             if (selectedNews) {
-                await updateGameNews({ id: selectedNews._id, formData }).unwrap();
+                try {
+                    await updateGameNews({ id: selectedNews?._id, updates: formData }).unwrap();
+                    message.success('News Updated successfully');
+                } catch (error) {
+                    console.log(error);
+                }
             } else {
                 await createGameNews(formData).unwrap();
+                message.success('News added successfully');
             }
 
             setIsModalVisible(false);
@@ -53,7 +64,6 @@ const NewsPanel = () => {
             console.error("Failed to save news:", error);
         }
     };
-
 
     const handleDelete = (id: any) => {
         Modal.confirm({
@@ -79,6 +89,11 @@ const NewsPanel = () => {
             key: 'title',
         },
         {
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
+        },
+        {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
@@ -90,9 +105,9 @@ const NewsPanel = () => {
             render: (date: any) => new Date(date).toLocaleDateString(),
         },
         {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
+            title: 'Author',
+            dataIndex: 'author',
+            key: 'author',
         },
         {
             title: 'Actions',
@@ -126,7 +141,7 @@ const NewsPanel = () => {
             setFileList([file]);
             return false;
         },
-        onChange: ({ fileList }) => {
+        onChange: ({ fileList }: { fileList: any[] }) => {
             setFileList(fileList);
         },
         fileList,
@@ -172,7 +187,7 @@ const NewsPanel = () => {
                             data={calculateNewsDistribution()}
                             angleField="value"
                             colorField="type"
-                            radius={0.8}
+                            radius={1}
                             label={{ type: 'outer' }}
                         />
                     </Card>
@@ -192,14 +207,14 @@ const NewsPanel = () => {
                     columns={columns}
                     dataSource={allNews}
                     loading={isLoading}
-                    rowKey="id"
+                    rowKey="_id"
                     scroll={{ x: true }}
                 />
             </Card>
 
             <Modal
                 title={selectedNews ? "Edit News" : "Create News"}
-                visible={isModalVisible}
+                open={isModalVisible}
                 onCancel={() => {
                     setIsModalVisible(false);
                     form.resetFields();
@@ -241,10 +256,7 @@ const NewsPanel = () => {
                             <Option value="breaking">Breaking News</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item
-                        label="Upload Image"
-                        rules={[{ required: true, message: 'Please upload an image!' }]}
-                    >
+                    <Form.Item label="Upload Image">
                         <Upload {...uploadProps} listType="picture">
                             <Button icon={<UploadOutlined />}>Click to Upload</Button>
                         </Upload>

@@ -29,6 +29,7 @@ const Home = () => {
 
       navigate("/");
       toast.success("Login Successfully");
+      window.location.reload();
     }
   }, [navigate]);
 

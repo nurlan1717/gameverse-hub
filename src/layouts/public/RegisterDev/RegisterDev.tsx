@@ -44,7 +44,7 @@ const DeveloperRegister = () => {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 toast.success("Registered successfully! Check your email for verification and wait for admin approval.");
                 setSuccess(true);
-            } catch (err) {
+            } catch (err: any) {
                 if (err?.data?.message) {
                     toast.error(err.data.message);
                 } else {
@@ -110,7 +110,7 @@ const DeveloperRegister = () => {
                                     </label>
                                     <div className={`
                                         flex items-center bg-[#2D3B4F] rounded-lg p-2 transition-all duration-200
-                                        ${formik.touched[name] && formik.errors[name] ? 'ring-2 ring-red-500/50' : 'focus-within:ring-2 focus-within:ring-blue-500/50'}
+                                        ${formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] ? 'ring-2 ring-red-500/50' : 'focus-within:ring-2 focus-within:ring-blue-500/50'}
                                     `}>
                                         <span className="text-gray-400 mx-2 group-focus-within:text-blue-400">
                                             {icon}
@@ -122,8 +122,8 @@ const DeveloperRegister = () => {
                                             placeholder={`Enter your ${label.toLowerCase()}`}
                                         />
                                     </div>
-                                    {formik.touched[name] && formik.errors[name] && (
-                                        <p className="text-red-400 text-sm mt-1 ml-1">{formik.errors[name]}</p>
+                                    {formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] && (
+                                        <p className="text-red-400 text-sm mt-1 ml-1">{formik.errors[name as keyof typeof formik.errors]}</p>
                                     )}
                                 </div>
                             ))}

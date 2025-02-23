@@ -7,8 +7,6 @@ import {
     MessageCircle,
     Globe,
     Shield,
-    Headphones,
-    Sparkles
 } from 'lucide-react';
 
 const FeatureCard = ({ icon: Icon, title, description }: {
@@ -20,10 +18,8 @@ const FeatureCard = ({ icon: Icon, title, description }: {
         whileHover={{ scale: 1.05, rotate: 1 }}
         className="relative bg-[#1F1F23] rounded-xl p-8 overflow-hidden group"
     >
-        {/* Arka plan efekti */}
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Icon ve Başlık */}
         <div className="flex items-center gap-4 mb-6">
             <div className="bg-indigo-500/10 p-3 rounded-lg">
                 <Icon className="w-6 h-6 text-indigo-500" />
@@ -31,10 +27,8 @@ const FeatureCard = ({ icon: Icon, title, description }: {
             <h3 className="text-xl font-semibold text-white">{title}</h3>
         </div>
 
-        {/* Açıklama */}
         <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
 
-        {/* Alt çizgi efekti */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
     </motion.div>
 );
@@ -44,14 +38,11 @@ const StatisticCard = ({ value, label }: { value: string; label: string }) => (
         whileHover={{ scale: 1.05 }}
         className="bg-[#1F1F23] rounded-xl p-8 text-center relative overflow-hidden group"
     >
-        {/* Arka plan efekti */}
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Değer ve Etiket */}
         <div className="text-4xl font-bold text-indigo-500 mb-2">{value}</div>
         <div className="text-gray-400 text-sm">{label}</div>
 
-        {/* Alt çizgi efekti */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
     </motion.div>
 );

@@ -203,7 +203,7 @@ export const userApi = createApi({
       invalidatesTags: ['User'],
     }),
 
-    getWishlist: builder.query<WishlistItem[], void>({
+    getWishlist: builder.query<any, void>({
       query: () => 'users/me/wishlist',
       providesTags: ['Wishlist'],
     }),
@@ -225,7 +225,7 @@ export const userApi = createApi({
       invalidatesTags: ['Wishlist'],
     }),
 
-    getBasket: builder.query<BasketItem[], void>({
+    getBasket: builder.query<any, void>({
       query: () => 'users/me/basket',
       providesTags: ['Basket'],
     }),

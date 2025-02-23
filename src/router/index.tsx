@@ -17,8 +17,8 @@ import Home from "../pages/Client/Home/Home";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 
 import Register from "../layouts/public/Register/Register";
-import RegisterChoice from "../layouts/public/RegisterChoice/RegisterChoice.jsx";
-import DeveloperRegister from "../layouts/public/RegisterDev/RegisterDev.jsx";
+import RegisterChoice from "../layouts/public/RegisterChoice/RegisterChoice.tsx";
+import DeveloperRegister from "../layouts/public/RegisterDev/RegisterDev.js";
 import WishlistPage from "../pages/Client/Wishlist/WishlistPage.js";
 import BasketPage from "../pages/Client/Basket/Basket.js";
 import UserProfilePage from "../pages/UserProfile/UserProfilePage.js";
@@ -26,7 +26,6 @@ import Teams from "../pages/Client/Teams/Teams.js";
 import ProfileLayouts from "../layouts/UserProfile/ProfileLayouts.js";
 import Chat from "../components/Chat/Chat.js";
 import DashboardDev from "../pages/Dev/DashboardDev/DashboardDev.js";
-import Stats from "../pages/Dev/stats/Stats.js";
 import UserEmailPage from "../pages/UserProfile/UserEmailPage.js";
 import UserPayment from "../pages/UserProfile/UserPayment.js";
 import UserLibrary from "../pages/UserProfile/UserLibrary.js";
@@ -85,7 +84,6 @@ const AppRouter = () => {
                 <Route element={<ProtectedRoute allowedRoles={["developer", "admin"]} />}>
                     <Route path="/dev" element={<DevLayouts />}>
                         <Route index element={<DashboardDev />} />
-                        <Route path="stats" element={<Stats />} />
                         <Route path="tournament" element={<DevTournament />} />
                     </Route>
                 </Route>

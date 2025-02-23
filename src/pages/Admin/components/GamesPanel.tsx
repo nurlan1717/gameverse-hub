@@ -214,7 +214,7 @@ const GamesPanel = () => {
                     <Card>
                         <Statistic
                             title="Approved Games"
-                            value={games?.data?.filter(g => g.approved === true).length || 0}
+                            value={games?.data?.filter((g: any) => g.approved === true).length || 0}
                             valueStyle={{ color: '#3f8600' }}
                         />
                     </Card>

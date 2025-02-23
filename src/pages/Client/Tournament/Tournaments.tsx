@@ -37,8 +37,8 @@ const TeamSelectionModal = ({
 
     if (!isOpen) return null;
 
-    const isTeamCaptain = (team: Team) => {
-        return team.members.some(member =>
+    const isTeamCaptain = (team: any) => {
+        return team.members.some((member: any) =>
             member.userId._id === currentUserId && member.role === 'captain'
         );
     };
@@ -307,8 +307,8 @@ const LoadingSkeleton = () => (
 );
 
 const Tournaments = () => {
-    const { data: tournaments, error, isLoading } = useGetActiveTournamentsQuery({})
-    const id = Cookies.get("id");
+    const { data: tournaments, error, isLoading } = useGetActiveTournamentsQuery()
+    const id = Cookies.get("id") || '';
     const currentUserId = id;
 
     return (

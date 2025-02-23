@@ -87,7 +87,7 @@ const UserPassword = () => {
                 setNewPassword('');
                 setConfirmPassword('');
             } else if ('error' in response) {
-                toast.error(response?.error?.data?.message || 'Failed to update password.');
+                toast.error('Failed to update password.');
             }
         } catch (error) {
             toast.error('An unexpected error occurred.');

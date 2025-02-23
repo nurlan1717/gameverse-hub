@@ -33,15 +33,18 @@ const platformIcons = {
     Xbox: "🅧",
     Nintendo: "🍄"
 };
+interface MyGamesSliderProps {
+    games: any[];
+}
 
-const MyGamesSlider = () => {
+const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
     const token = Cookies.get('token');
     const { data: gamesData, isLoading, isError } = useGetGamesQuery({ limit: 5 });
     const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
     const [addToWishlist] = useAddToWishlistMutation();
     const [addToBasket] = useAddToBasketMutation();
 
-    const filteredGames = gamesData?.data?.filter((game: Game) => game.approved);
+    const filteredGames = gamesData?.data?.filter((game: any) => game.approved);
 
 
     const isInBasket = (gameId: string) =>

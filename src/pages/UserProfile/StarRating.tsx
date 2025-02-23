@@ -1,5 +1,13 @@
 
-const StarRating = ({ rating, onRatingChange, isDisabled }) => {
+import React from 'react';
+
+interface StarRatingProps {
+    rating: number;
+    onRatingChange: (rating: number) => void;
+    isDisabled: boolean;
+}
+
+const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange, isDisabled }) => {
     return (
         <div className="flex space-x-1">
             {[...Array(5)].map((_, index) => {

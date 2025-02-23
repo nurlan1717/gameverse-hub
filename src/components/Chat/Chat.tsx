@@ -22,13 +22,13 @@ const Chat = () => {
     useEffect(() => {
         socket.on("connect", () => {
             toast.success("Connected to chat server", {
-                icon: "🚀"
+                icon: <span role="img" aria-label="rocket">🚀</span>
             });
         });
 
         socket.on("disconnect", () => {
             toast.error("Disconnected from chat server", {
-                icon: "⚠️"
+                icon: <span role="img" aria-label="danger">⚠️</span>
             });
         });
 
@@ -147,10 +147,10 @@ const Chat = () => {
                                                     {msg.user.username}
                                                 </span>
                                                 <div className={`mt-1 p-4 rounded-2xl ${msg.user.username === user?.data?.username
-                                                        ? msg.user.role === 'admin'
-                                                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
-                                                            : 'bg-indigo-600 text-white'
-                                                        : 'bg-[#252529] text-gray-100'
+                                                    ? msg.user.role === 'admin'
+                                                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
+                                                        : 'bg-indigo-600 text-white'
+                                                    : 'bg-[#252529] text-gray-100'
                                                     }`}>
                                                     <p className="text-sm leading-relaxed">{msg.text}</p>
                                                 </div>

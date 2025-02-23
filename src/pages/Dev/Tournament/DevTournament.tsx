@@ -22,20 +22,17 @@ function DevTournament() {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [previewImage, setPreviewImage] = useState<string>('');
 
-    const { data: tournaments, isLoading, error } = useGetActiveTournamentsQuery({}, {
-        pollingInterval: 60000, // Poll every minute to check for status updates
-    });
+    const { data: tournaments, isLoading, error } = useGetActiveTournamentsQuery();
     const [createTournament, { isLoading: isCreatingTournament }] = useCreateTournamentMutation();
     const [updateTournament, { isLoading: isUpdating }] = useUpdateTournamentMutation();
     const [deleteTournament, { isLoading: isDeleting }] = useDeleteTournamentMutation();
     const [setTournamentActive] = useSetTournamentActiveMutation();
 
-    // Check for tournaments that need to be activated
     useEffect(() => {
         const checkTournamentStatus = async () => {
             if (tournaments?.data) {
                 const now = new Date();
-                tournaments.data.forEach(async (tournament: Tournament) => {
+                tournaments.data.forEach(async (tournament: any) => {
                     const startDate = new Date(tournament.startDate);
                     const endDate = new Date(tournament.endDate);
 
@@ -57,7 +54,7 @@ function DevTournament() {
     const handleSubmit = async (values: any) => {
         try {
             const formData = new FormData();
-            
+
             Object.keys(values).forEach(key => {
                 if (key === 'dateRange') {
                     formData.append('startDate', values.dateRange[0].toDate().toISOString());
@@ -104,14 +101,13 @@ function DevTournament() {
         });
     };
 
-    const startEdit = (tournament: Tournament) => {
+    const startEdit = (tournament: any) => {
         setEditingId(tournament._id);
         form.setFieldsValue({
             ...tournament,
             dateRange: [moment(tournament.startDate), moment(tournament.endDate)],
         });
-        
-        // Set image preview if exists
+
         if (tournament.image) {
             setFileList([
                 {
@@ -126,14 +122,13 @@ function DevTournament() {
             setFileList([]);
             setPreviewImage('');
         }
-        
+
         setIsModalVisible(true);
     };
 
     const handleImageChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
         setFileList(newFileList);
-        
-        // Preview for new uploads
+
         if (newFileList.length > 0 && newFileList[0].originFileObj) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -145,7 +140,7 @@ function DevTournament() {
         }
     };
 
-    const getStatusWithAction = (record: Tournament) => {
+    const getStatusWithAction = (record: any) => {
         const now = new Date();
         const startDate = new Date(record.startDate);
         const endDate = new Date(record.endDate);
@@ -204,7 +199,7 @@ function DevTournament() {
             title: 'Tournament',
             dataIndex: 'name',
             key: 'name',
-            render: (text, record) => (
+            render: (text, record: any) => (
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                         {record.image ? (
@@ -341,9 +336,9 @@ function DevTournament() {
                 footer={null}
                 width={600}
             >
-                <Form 
-                    form={form} 
-                    onFinish={handleSubmit} 
+                <Form
+                    form={form}
+                    onFinish={handleSubmit}
                     layout="vertical"
                     className="mt-4"
                 >
@@ -412,7 +407,7 @@ function DevTournament() {
                                         </div>
                                     )}
                                 </Upload>
-                                
+
                                 {previewImage && (
                                     <div className="mt-4">
                                         <p className="text-sm text-gray-500 mb-2">Preview:</p>

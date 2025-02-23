@@ -6,7 +6,6 @@ import AppRouter from './router'
 import { useEffect } from 'react';
 import { setCredentials } from './features/auth/authSlice';
 import Cookies from "js-cookie";
-import { motion } from "framer-motion";
 
 function App() {
   const id = Cookies.get("id");

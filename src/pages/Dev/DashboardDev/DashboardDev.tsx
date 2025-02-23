@@ -13,7 +13,7 @@ import {
 import { useGetUserByIdQuery } from "../../../features/user/usersSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ColumnsType } from "antd/es/table"; 
+import { ColumnsType } from "antd/es/table";
 
 const { Option } = Select;
 
@@ -139,30 +139,30 @@ const DashboardDev = () => {
         {
             title: "Title",
             dataIndex: "title",
-            responsive: ['sm'], 
+            responsive: ['sm'],
         },
         {
             title: "Description",
             dataIndex: "description",
-            responsive: ['md'], 
+            responsive: ['md'],
         },
         {
             title: "Price",
             dataIndex: "price",
             key: "price",
             render: (price: number) => `$${price}`,
-            responsive: ['sm'], 
+            responsive: ['sm'],
         },
         {
             title: "Sales",
             dataIndex: "sales",
             key: "sales",
-            responsive: ['md'], 
+            responsive: ['md'],
         },
         {
             title: "Rating",
             dataIndex: "averageRating",
-            responsive: ['lg'], 
+            responsive: ['lg'],
         },
         {
             title: "Status",
@@ -173,13 +173,13 @@ const DashboardDev = () => {
                     {approved ? 'Approved' : 'Pending'}
                 </span>
             ),
-            responsive: ['sm'], 
+            responsive: ['sm'],
         },
         {
             title: "Actions",
             key: "actions",
-            fixed: 'right' as const, 
-            width: 100, 
+            fixed: 'right' as const,
+            width: 100,
             render: (_: any, record: Game) => (
                 <div className="flex space-x-2">
                     <Button

@@ -7,7 +7,6 @@ import { User, Mail, Lock, ShieldCheck, Facebook, Chrome, Sparkles } from "lucid
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRegisterUserMutation } from "../../../features/user/usersSlice";
-import { ADMIN_URL_BASE } from "../../../constants/api";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);

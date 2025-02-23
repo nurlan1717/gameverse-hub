@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { User, Code, LogIn, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const RegisterChoice = () => {
     const navigate = useNavigate();
@@ -91,6 +91,7 @@ const RegisterChoice = () => {
                     </button>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };

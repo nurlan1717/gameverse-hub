@@ -2,18 +2,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BASE_URL } from '../../constants/api';
 import Cookies from 'js-cookie';
 
-type User = {
-  _id: string;
-  fullName: string;
-  username: string;
-  email: string;
-  role: string;
-  profileImage: string;
-  balance: number;
-  basket: [];
-  wishlist: [];
-};
-
 type Game = {
   _id: string;
   title: string;
@@ -81,12 +69,12 @@ export const userApi = createApi({
 
     getUserByUsername: builder.query<any, string>({
       query: (username) => `users/username/${username}`,
-      providesTags: (result, error, username) => [{ type: 'User', username }],
+      providesTags: ['User'],
     }),
 
     getUserById: builder.query<any, string>({
       query: (id) => `users/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+      providesTags: ['User'],
     }),
 
     getUserBalance: builder.query<UserBalance, void>({

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Select, Card, Statistic, Upload, Skeleton, Popconfirm } from "antd";
+import { Table, Button, Modal, Form, Input, Select, Card, Statistic, Upload, Skeleton, Popconfirm, Breakpoint } from "antd";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { UserOutlined, MailOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Cookies from 'js-cookie';
@@ -13,6 +13,7 @@ import {
 import { useGetUserByIdQuery } from "../../../features/user/usersSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ColumnsType } from "antd/es/table"; 
 
 const { Option } = Select;
 
@@ -53,7 +54,7 @@ const DashboardDev = () => {
     const [updateGame, { isLoading: isUpdating }] = useUpdateGameMutation();
     const [deleteGame, { isLoading: isDeleting }] = useDeleteGameMutation();
     const [uploadGameFile, { isLoading: isUploading }] = useUploadGameFileMutation();
-    const [form] = Form.useForm<GameFormValues>();
+    const [form] = Form.useForm<any>();
 
     const filteredGames: Game[] = gamesData?.data.filter((game: Game) => game.developerId === id);
 
@@ -132,34 +133,36 @@ const DashboardDev = () => {
         }
     };
 
-    const columns = [
+
+
+    const columns: ColumnsType<Game> = [
         {
             title: "Title",
             dataIndex: "title",
-            responsive: ['sm'],
+            responsive: ['sm'], 
         },
         {
             title: "Description",
             dataIndex: "description",
-            responsive: ['md'],
+            responsive: ['md'], 
         },
         {
             title: "Price",
             dataIndex: "price",
             key: "price",
             render: (price: number) => `$${price}`,
-            responsive: ['sm'],
+            responsive: ['sm'], 
         },
         {
             title: "Sales",
             dataIndex: "sales",
             key: "sales",
-            responsive: ['md'],
+            responsive: ['md'], 
         },
         {
             title: "Rating",
             dataIndex: "averageRating",
-            responsive: ['lg'],
+            responsive: ['lg'], 
         },
         {
             title: "Status",
@@ -170,13 +173,13 @@ const DashboardDev = () => {
                     {approved ? 'Approved' : 'Pending'}
                 </span>
             ),
-            responsive: ['sm'],
+            responsive: ['sm'], 
         },
         {
             title: "Actions",
             key: "actions",
-            fixed: 'right',
-            width: 100,
+            fixed: 'right' as const, 
+            width: 100, 
             render: (_: any, record: Game) => (
                 <div className="flex space-x-2">
                     <Button
@@ -199,7 +202,6 @@ const DashboardDev = () => {
             ),
         },
     ];
-
     const salesData = games.map((game) => ({
         name: game.title,
         sales: game.sales,

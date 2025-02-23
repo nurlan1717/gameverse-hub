@@ -1,13 +1,11 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/autoplay";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import {
     useAddToWishlistMutation,
     useAddToBasketMutation,
     useGetBasketQuery
 } from '../../../features/user/usersSlice';
+
 import { toast, ToastContainer } from 'react-toastify';
 import { useGetGamesQuery } from '../../../features/games/gamesSlice';
 import Cookies from 'js-cookie';
@@ -33,11 +31,8 @@ const platformIcons = {
     Xbox: "🅧",
     Nintendo: "🍄"
 };
-interface MyGamesSliderProps {
-    games: any[];
-}
 
-const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
+const MyGamesSlider = () => {
     const token = Cookies.get('token');
     const { data: gamesData, isLoading, isError } = useGetGamesQuery({ limit: 5 });
     const { data: basketData } = useGetBasketQuery(undefined, { skip: !token });
@@ -45,7 +40,6 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
     const [addToBasket] = useAddToBasketMutation();
 
     const filteredGames = gamesData?.data?.filter((game: any) => game.approved);
-
 
     const isInBasket = (gameId: string) =>
         basketData?.data?.some((item: any) => item.gameId?._id === gameId);
@@ -64,7 +58,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
             await addToWishlist({ gameId }).unwrap();
             toast.success('Added to wishlist successfully!');
         } catch (err: any) {
-            if (err.data.message === "Game already in wishlist") {
+            if (err.data?.message === "Game already in wishlist") {
                 toast.error('This game is already in your wishlist');
                 return;
             }
@@ -75,7 +69,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
     const handleAddToBasket = async (gameId: string) => {
         if (!handleAuthCheck()) return;
         if (isInBasket(gameId)) {
-            toast.error('This game is already in your basket')
+            toast.error('This game is already in your basket');
             return;
         }
         try {
@@ -91,11 +85,12 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
     return (
         <div className="relative">
             <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
                 navigation
-                modules={[Navigation, Autoplay]}
+                pagination={{ clickable: true }}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="mySwiper"
-                style={{ width: window.innerWidth < 480 ? "auto" : "auto", height: window.innerWidth < 480 ? "360px" : "500px", }}
+                style={{ width: "auto", height: window.innerWidth < 480 ? "360px" : "500px" }}
             >
                 {isLoading
                     ? Array.from({ length: 5 }).map((_, index) => (

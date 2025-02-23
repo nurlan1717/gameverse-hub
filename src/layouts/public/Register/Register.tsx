@@ -7,6 +7,7 @@ import { User, Mail, Lock, ShieldCheck, Facebook, Chrome, Sparkles } from "lucid
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRegisterUserMutation } from "../../../features/user/usersSlice";
+import { ADMIN_URL_BASE } from "../../../constants/api";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
@@ -134,23 +135,6 @@ const Register = () => {
                         <div className="relative flex justify-center text-xs uppercase">
                             <span className="bg-[#1E293B] px-2 text-gray-400">Or continue with</span>
                         </div>
-                    </div>
-
-                    <div className="flex gap-4 justify-center">
-                        <button
-                            className="flex-1 bg-[#2D3B4F] hover:bg-[#374151] text-white p-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-lg"
-                            onClick={() => window.location.href = `/auth/google`}
-                        >
-                            <Chrome className="w-5 h-5 text-red-400 group-hover:text-red-300" />
-                            <span className="font-medium">Google</span>
-                        </button>
-                        <button
-                            className="flex-1 bg-[#2D3B4F] hover:bg-[#374151] text-white p-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-lg"
-                            onClick={() => window.location.href = `/auth/facebook`}
-                        >
-                            <Facebook className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
-                            <span className="font-medium">Facebook</span>
-                        </button>
                     </div>
 
                     <div className="mt-6 text-center">

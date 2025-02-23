@@ -8,7 +8,7 @@ import { Terminal, Send, Shield } from "lucide-react";
 
 const socket = io("https://gameverse-hub-17.vercel.app", {
     withCredentials: true,
-    transports: ["websocket"],
+    transports: ['websocket', 'polling'],
 });
 
 const Chat = () => {

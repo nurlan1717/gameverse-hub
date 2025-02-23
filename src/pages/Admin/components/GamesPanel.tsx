@@ -81,7 +81,6 @@ const GamesPanel = () => {
     const gameMetricsData = calculateMonthlyMetrics();
     const genreDistributionData = calculateGenreDistribution();
     const platformDistributionData = calculatePlatformDistribution();
-    console.log(gameMetricsData);
 
     const handleDelete = (id: any) => {
         Modal.confirm({
@@ -125,7 +124,10 @@ const GamesPanel = () => {
                             <Button
                                 type="primary"
                                 icon={<CheckOutlined />}
-                                onClick={() => approveGame(record._id)}
+                                onClick={() => {
+                                    const resp = approveGame(record._id)
+                                    console.log(resp);
+                                }}
                             >
                                 Approve
                             </Button>

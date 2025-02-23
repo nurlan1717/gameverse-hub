@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { Terminal, Send, Shield } from "lucide-react";
 
-const socket = io("http://localhost:3000", {
+const socket = io("https://gameverse-hub-17.vercel.app", {
     withCredentials: true,
     transports: ["websocket"],
 });

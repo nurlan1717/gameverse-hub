@@ -4,13 +4,33 @@ import MyGamesSlider from "./MySwiper";
 import HomeSections from "./HomeSection";
 import { motion } from "framer-motion";
 import GamesSection from "./GamesSection";
+import Cookies from 'js-cookie';
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { data, isLoading, refetch: fetchGames } = useFetchGamesQuery();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchGames();
   }, [fetchGames]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get("token");
+    const role = queryParams.get("role");
+    const id = queryParams.get("id");
+
+    if (token && role) {
+      Cookies.set("token", token, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+      Cookies.set("role", role, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+      if (id) Cookies.set("id", id, { expires: 1, path: "/", secure: true, sameSite: "Lax" });
+
+      navigate("/");
+      toast.success("Login Successfully");
+    }
+  }, [navigate]);
 
   const myGames = data?.data || [];
 
@@ -54,6 +74,7 @@ const Home = () => {
           <HomeSections />
         </div>
       </section>
+      <ToastContainer />
     </>
   );
 };

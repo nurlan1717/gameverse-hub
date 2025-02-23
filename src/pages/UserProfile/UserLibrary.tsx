@@ -6,6 +6,7 @@ import { Download, Star } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StarRating from './StarRating';
+import { Helmet } from 'react-helmet-async';
 
 interface Game {
     _id: string;
@@ -19,7 +20,7 @@ interface Game {
     averageRating?: number;
 }
 
-function UserLibrary () {
+function UserLibrary() {
     const id = Cookies.get('id') || '';
     const { data: user, isLoading, isError } = useGetUserByIdQuery(id);
     const [games, setGames] = useState<Game[]>([]);
@@ -92,91 +93,98 @@ function UserLibrary () {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <ToastContainer position="bottom-right" autoClose={3000} />
+        <>
+            <Helmet>
+                <title>Library</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div className="min-h-screen bg-gray-50 p-6">
+                <ToastContainer position="bottom-right" autoClose={3000} />
 
-            <div className="max-w-7xl mx-auto">
-                <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Your Game Library</h1>
-                    <p className="mt-2 text-gray-600">Manage and rate your collection of games</p>
-                </header>
+                <div className="max-w-7xl mx-auto">
+                    <header className="mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900">Your Game Library</h1>
+                        <p className="mt-2 text-gray-600">Manage and rate your collection of games</p>
+                    </header>
 
-                {games.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                        <p className="text-gray-600">Your library is empty. Start exploring games to add to your collection!</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {games.map((game) => (
-                            <div key={game._id} className="bg-white rounded-lg shadow-sm overflow-hidden transition-all hover:shadow-md">
-                                <div className="aspect-video w-full relative">
-                                    <img
-                                        src={game.coverPhotoUrl}
-                                        alt={game.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute top-2 right-2 bg-black/70 px-3 py-1 rounded-full">
-                                        <p className="text-white text-sm font-medium">${game.price}</p>
-                                    </div>
-                                </div>
-
-                                <div className="p-4">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h2 className="text-xl font-semibold text-gray-900">{game.title}</h2>
-                                        <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
-                                            {game.genre}
-                                        </span>
+                    {games.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                            <p className="text-gray-600">Your library is empty. Start exploring games to add to your collection!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {games.map((game) => (
+                                <div key={game._id} className="bg-white rounded-lg shadow-sm overflow-hidden transition-all hover:shadow-md">
+                                    <div className="aspect-video w-full relative">
+                                        <img
+                                            src={game.coverPhotoUrl}
+                                            alt={game.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute top-2 right-2 bg-black/70 px-3 py-1 rounded-full">
+                                            <p className="text-white text-sm font-medium">${game.price}</p>
+                                        </div>
                                     </div>
 
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{game.description}</p>
-
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                <Star className="w-5 h-5 text-yellow-400" />
-                                                <span className="text-sm text-gray-600">
-                                                    {game.averageRating ? `${game.averageRating.toFixed(1)} / 5.0` : 'Not rated'}
-                                                </span>
-                                            </div>
-
-                                            {game.fileUrl && (
-                                                <a
-                                                    href={game.fileUrl}
-                                                    download
-                                                    className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
-                                                >
-                                                    <Download className="w-4 h-4" />
-                                                    <span>Download</span>
-                                                </a>
-                                            )}
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h2 className="text-xl font-semibold text-gray-900">{game.title}</h2>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                                                {game.genre}
+                                            </span>
                                         </div>
 
-                                        <div className="pt-3 border-t">
-                                            <div className="flex items-center justify-between">
-                                                <StarRating
-                                                    rating={ratings[game._id] || 0}
-                                                    onRatingChange={(rating) => handleRatingChange(game._id, rating)}
-                                                    isDisabled={submittedRatings[game._id]}
-                                                />
+                                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{game.description}</p>
 
-                                                {!submittedRatings[game._id] && (
-                                                    <button
-                                                        onClick={() => submitRating(game._id)}
-                                                        className="px-4 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 transition-colors"
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-2">
+                                                    <Star className="w-5 h-5 text-yellow-400" />
+                                                    <span className="text-sm text-gray-600">
+                                                        {game.averageRating ? `${game.averageRating.toFixed(1)} / 5.0` : 'Not rated'}
+                                                    </span>
+                                                </div>
+
+                                                {game.fileUrl && (
+                                                    <a
+                                                        href={game.fileUrl}
+                                                        download
+                                                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
                                                     >
-                                                        Rate
-                                                    </button>
+                                                        <Download className="w-4 h-4" />
+                                                        <span>Download</span>
+                                                    </a>
                                                 )}
                                             </div>
+
+                                            <div className="pt-3 border-t">
+                                                <div className="flex items-center justify-between">
+                                                    <StarRating
+                                                        rating={ratings[game._id] || 0}
+                                                        onRatingChange={(rating) => handleRatingChange(game._id, rating)}
+                                                        isDisabled={submittedRatings[game._id]}
+                                                    />
+
+                                                    {!submittedRatings[game._id] && (
+                                                        <button
+                                                            onClick={() => submitRating(game._id)}
+                                                            className="px-4 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 transition-colors"
+                                                        >
+                                                            Rate
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

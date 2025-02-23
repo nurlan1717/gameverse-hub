@@ -3,6 +3,7 @@ import { Pie } from '@ant-design/plots';
 import { EditOutlined, DeleteOutlined, NotificationOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useCreateGameNewsMutation, useDeleteGameNewsMutation, useGetGameNewsQuery, useUpdateGameNewsMutation } from '../../../features/gamenews/gamenews';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 const { Option } = Select;
 
@@ -149,6 +150,11 @@ const NewsPanel = () => {
 
     return (
         <div>
+            <Helmet>
+                <title>Admin News</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
             <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={8}>
                     <Card>

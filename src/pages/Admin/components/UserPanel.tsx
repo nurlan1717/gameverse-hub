@@ -4,6 +4,7 @@ import { Area, Pie, Bar } from '@ant-design/plots';
 import { UserOutlined, LockOutlined, UnlockOutlined, CheckOutlined } from '@ant-design/icons';
 import { useApproveDeveloperMutation, useBanAccountMutation, useGetUsersQuery, useUnbanAccountMutation } from '../../../features/user/usersSlice';
 import { toast, ToastContainer } from 'react-toastify';
+import { Helmet } from 'react-helmet-async';
 
 const UsersPanel = () => {
     const { data: users, isLoading } = useGetUsersQuery();
@@ -207,114 +208,121 @@ const UsersPanel = () => {
     };
 
     return (
-        <div style={{ padding: '16px' }}>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-                    <Card>
-                        <Statistic
-                            title="Total Users"
-                            value={users?.data?.length || 0}
-                            prefix={<UserOutlined />}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-                    <Card>
-                        <Statistic
-                            title="Active Users"
-                            value={users?.data?.filter((u: any) => !u.isBanned).length || 0}
-                            valueStyle={{ color: '#3f8600' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-                    <Card>
-                        <Statistic
-                            title="Banned Users"
-                            value={users?.data?.filter((u: any) => u.isBanned).length || 0}
-                            valueStyle={{ color: '#cf1322' }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+        <>
+            <Helmet>
+                <title>Admin Users</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div style={{ padding: '16px' }}>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                        <Card>
+                            <Statistic
+                                title="Total Users"
+                                value={users?.data?.length || 0}
+                                prefix={<UserOutlined />}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                        <Card>
+                            <Statistic
+                                title="Active Users"
+                                value={users?.data?.filter((u: any) => !u.isBanned).length || 0}
+                                valueStyle={{ color: '#3f8600' }}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                        <Card>
+                            <Statistic
+                                title="Banned Users"
+                                value={users?.data?.filter((u: any) => u.isBanned).length || 0}
+                                valueStyle={{ color: '#cf1322' }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-                    <Card>
-                        <h3>User Activity Trend</h3>
-                        <Area
-                            data={userActivityData}
-                            xField="date"
-                            yField="value"
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-                    <Card>
-                        <h3>Subscription Plan Distribution</h3>
-                        <Pie
-                            data={subscriptionPlanData}
-                            angleField="value"
-                            colorField="type"
-                            radius={0.8}
-                            responsive
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+                        <Card>
+                            <h3>User Activity Trend</h3>
+                            <Area
+                                data={userActivityData}
+                                xField="date"
+                                yField="value"
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+                        <Card>
+                            <h3>Subscription Plan Distribution</h3>
+                            <Pie
+                                data={subscriptionPlanData}
+                                angleField="value"
+                                colorField="type"
+                                radius={0.8}
+                                responsive
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col span={24}>
-                    <Card>
-                        <h3>User Sign-ups Over Time</h3>
-                        <Bar
-                            data={userSignUpData}
-                            xField="month"
-                            yField="signups"
-                            responsive
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+                    <Col span={24}>
+                        <Card>
+                            <h3>User Sign-ups Over Time</h3>
+                            <Bar
+                                data={userSignUpData}
+                                xField="month"
+                                yField="signups"
+                                responsive
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Card style={{ marginTop: '16px' }}>
-                <Table
-                    columns={columns}
-                    dataSource={users?.data}
-                    loading={isLoading}
-                    rowKey="id"
-                    scroll={{ x: true }}
-                />
-            </Card>
+                <Card style={{ marginTop: '16px' }}>
+                    <Table
+                        columns={columns}
+                        dataSource={users?.data}
+                        loading={isLoading}
+                        rowKey="id"
+                        scroll={{ x: true }}
+                    />
+                </Card>
 
-            <Card style={{ marginTop: '16px' }}>
-                <h1 className='font-bold text-xl mb-2'>Developer Requests</h1>
-                <Table
-                    columns={columns2}
-                    dataSource={unverifiedDevelopers}
-                    loading={isLoading}
-                    rowKey="id"
-                    scroll={{ x: true }}
-                />
-            </Card>
+                <Card style={{ marginTop: '16px' }}>
+                    <h1 className='font-bold text-xl mb-2'>Developer Requests</h1>
+                    <Table
+                        columns={columns2}
+                        dataSource={unverifiedDevelopers}
+                        loading={isLoading}
+                        rowKey="id"
+                        scroll={{ x: true }}
+                    />
+                </Card>
 
-            <Modal
-                title="Ban Duration"
-                visible={isModalVisible}
-                onOk={handleBan}
-                onCancel={() => setIsModalVisible(false)}
-                width={300}
-            >
-                <Input
-                    type="number"
-                    min={0}
-                    placeholder="Enter ban duration in minutes"
-                    value={banDuration}
-                    onChange={(e) => setBanDuration(parseInt(e.target.value))}
-                />
-            </Modal>
-            <ToastContainer />
-        </div>
+                <Modal
+                    title="Ban Duration"
+                    visible={isModalVisible}
+                    onOk={handleBan}
+                    onCancel={() => setIsModalVisible(false)}
+                    width={300}
+                >
+                    <Input
+                        type="number"
+                        min={0}
+                        placeholder="Enter ban duration in minutes"
+                        value={banDuration}
+                        onChange={(e) => setBanDuration(parseInt(e.target.value))}
+                    />
+                </Modal>
+                <ToastContainer />
+            </div>
+        </>
     );
 };
 

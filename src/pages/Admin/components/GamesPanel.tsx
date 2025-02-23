@@ -2,6 +2,7 @@ import { Table, Button, Card, Row, Col, Statistic, Space, Descriptions, Tag, Mod
 import { Line, Pie, Bar } from '@ant-design/plots';
 import { CheckOutlined, CloseOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useApproveGameMutation, useDeleteGameMutation, useFetchGamesQuery, useFetchPendingGamesQuery, useRejectGameMutation } from '../../../features/games/gamesSlice';
+import { Helmet } from 'react-helmet-async';
 
 const GamesPanel = () => {
     const { data: games, isLoading } = useFetchGamesQuery();
@@ -193,101 +194,108 @@ const GamesPanel = () => {
     };
 
     return (
-        <div>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} md={8}>
-                    <Card>
-                        <Statistic
-                            title="Total Games"
-                            value={games?.data?.length || 0}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                    <Card>
-                        <Statistic
-                            title="Pending Approvals"
-                            value={pendingGames?.data?.length || 0}
-                            valueStyle={{ color: '#faad14' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                    <Card>
-                        <Statistic
-                            title="Approved Games"
-                            value={games?.data?.filter((g: any) => g.approved === true).length || 0}
-                            valueStyle={{ color: '#3f8600' }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+        <>
+            <Helmet>
+                <title>Admin Games</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} md={8}>
+                        <Card>
+                            <Statistic
+                                title="Total Games"
+                                value={games?.data?.length || 0}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Card>
+                            <Statistic
+                                title="Pending Approvals"
+                                value={pendingGames?.data?.length || 0}
+                                valueStyle={{ color: '#faad14' }}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Card>
+                            <Statistic
+                                title="Approved Games"
+                                value={games?.data?.filter((g: any) => g.approved === true).length || 0}
+                                valueStyle={{ color: '#3f8600' }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-                <Col xs={24} md={12}>
-                    <Card>
-                        <h3>Game Status Trends</h3>
-                        <Line
-                            data={gameMetricsData}
-                            xField="month"
-                            yField="value"
-                            seriesField="type"
-                            smooth
-                            legend={{
-                                position: 'top',
-                            }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Card>
-                        <h3>Genre Distribution</h3>
-                        <Pie
-                            data={genreDistributionData}
-                            angleField="value"
-                            colorField="genre"
-                            radius={0.8}
-                            label={{
-                                type: 'inner',
-                                offset: '-30%',
-                                content: '{name}',
-                                style: {
-                                    fontSize: 14,
-                                    textAlign: 'center',
-                                },
-                            }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+                    <Col xs={24} md={12}>
+                        <Card>
+                            <h3>Game Status Trends</h3>
+                            <Line
+                                data={gameMetricsData}
+                                xField="month"
+                                yField="value"
+                                seriesField="type"
+                                smooth
+                                legend={{
+                                    position: 'top',
+                                }}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} md={12}>
+                        <Card>
+                            <h3>Genre Distribution</h3>
+                            <Pie
+                                data={genreDistributionData}
+                                angleField="value"
+                                colorField="genre"
+                                radius={0.8}
+                                label={{
+                                    type: 'inner',
+                                    offset: '-30%',
+                                    content: '{name}',
+                                    style: {
+                                        fontSize: 14,
+                                        textAlign: 'center',
+                                    },
+                                }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-                <Col xs={24} md={12}>
-                    <Card>
-                        <h3>Platform Distribution</h3>
-                        <Bar
-                            data={platformDistributionData}
-                            xField="value"
-                            yField="platform"
-                            seriesField="platform"
-                            legend={{
-                                position: 'top',
-                            }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+                    <Col xs={24} md={12}>
+                        <Card>
+                            <h3>Platform Distribution</h3>
+                            <Bar
+                                data={platformDistributionData}
+                                xField="value"
+                                yField="platform"
+                                seriesField="platform"
+                                legend={{
+                                    position: 'top',
+                                }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Card style={{ marginTop: 16 }}>
-                <Table
-                    columns={columns}
-                    dataSource={games?.data}
-                    loading={isLoading}
-                    rowKey="_id"
-                    scroll={{ x: true }}
-                />
-            </Card>
-        </div>
+                <Card style={{ marginTop: 16 }}>
+                    <Table
+                        columns={columns}
+                        dataSource={games?.data}
+                        loading={isLoading}
+                        rowKey="_id"
+                        scroll={{ x: true }}
+                    />
+                </Card>
+            </div>
+        </>
     );
 };
 

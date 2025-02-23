@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Newspaper, TrendingUp, Star, Clock } from 'lucide-react';
 import { useGetGameNewsQuery } from "../../../features/gamenews/gamenews";
+import { Helmet } from 'react-helmet-async';
 
 const NewsSection = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
     <div className="pb-12">
@@ -63,85 +64,92 @@ const News = () => {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="min-h-screen bg-[#101014]"
-        >
-            <div className="relative h-[400px] mb-12">
-                <div className="absolute inset-0">
-                    <img
-                        src="https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                        alt="Gaming News Hero"
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#101014] to-transparent" />
-                </div>
-                <div className="relative container mx-auto px-4 h-full flex items-center">
-                    <div className="max-w-2xl">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                            Latest Gaming News
-                        </h1>
-                        <p className="text-xl text-gray-300">
-                            Stay updated with the latest news from the gaming world
-                        </p>
+        <>
+            <Helmet>
+                <title>News</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="min-h-screen bg-[#101014]"
+            >
+                <div className="relative h-[400px] mb-12">
+                    <div className="absolute inset-0">
+                        <img
+                            src="https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
+                            alt="Gaming News Hero"
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#101014] to-transparent" />
+                    </div>
+                    <div className="relative container mx-auto px-4 h-full flex items-center">
+                        <div className="max-w-2xl">
+                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                                Latest Gaming News
+                            </h1>
+                            <p className="text-xl text-gray-300">
+                                Stay updated with the latest news from the gaming world
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="container mx-auto px-4">
-                {isLoading ? (
-                    <LoadingSkeleton />
-                ) : (
-                    <>
-                        <NewsSection title="Breaking News" icon={Newspaper}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {gameNews?.breaking?.map((news: any) => (
-                                    <NewsCard
-                                        key={news._id}
-                                        title={news.title}
-                                        image={news.imageUrl}
-                                        description={news.description}
-                                        date={news.date}
-                                        category="Breaking"
-                                    />
-                                ))}
-                            </div>
-                        </NewsSection>
+                <div className="container mx-auto px-4">
+                    {isLoading ? (
+                        <LoadingSkeleton />
+                    ) : (
+                        <>
+                            <NewsSection title="Breaking News" icon={Newspaper}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {gameNews?.breaking?.map((news: any) => (
+                                        <NewsCard
+                                            key={news._id}
+                                            title={news.title}
+                                            image={news.imageUrl}
+                                            description={news.description}
+                                            date={news.date}
+                                            category="Breaking"
+                                        />
+                                    ))}
+                                </div>
+                            </NewsSection>
 
-                        <NewsSection title="Trending" icon={TrendingUp}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {gameNews?.trending?.map((news: any) => (
-                                    <NewsCard
-                                        key={news.id}
-                                        title={news.title}
-                                        image={news.imageUrl}
-                                        description={news.description}
-                                        date={news.date}
-                                        category="Trending"
-                                    />
-                                ))}
-                            </div>
-                        </NewsSection>
+                            <NewsSection title="Trending" icon={TrendingUp}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {gameNews?.trending?.map((news: any) => (
+                                        <NewsCard
+                                            key={news.id}
+                                            title={news.title}
+                                            image={news.imageUrl}
+                                            description={news.description}
+                                            date={news.date}
+                                            category="Trending"
+                                        />
+                                    ))}
+                                </div>
+                            </NewsSection>
 
-                        <NewsSection title="Featured Stories" icon={Star}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {gameNews?.featured?.map((news: any) => (
-                                    <NewsCard
-                                        key={news.id}
-                                        title={news.title}
-                                        image={news.imageUrl}
-                                        description={news.description}
-                                        date={news.date}
-                                        category="Featured"
-                                    />
-                                ))}
-                            </div>
-                        </NewsSection>
-                    </>
-                )}
-            </div>
-        </motion.div>
+                            <NewsSection title="Featured Stories" icon={Star}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {gameNews?.featured?.map((news: any) => (
+                                        <NewsCard
+                                            key={news.id}
+                                            title={news.title}
+                                            image={news.imageUrl}
+                                            description={news.description}
+                                            date={news.date}
+                                            category="Featured"
+                                        />
+                                    ))}
+                                </div>
+                            </NewsSection>
+                        </>
+                    )}
+                </div>
+            </motion.div>
+        </>
     );
 };
 

@@ -7,6 +7,7 @@ import GamesSection from "./GamesSection";
 import Cookies from 'js-cookie';
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const Home = () => {
   const { data, isLoading, refetch: fetchGames } = useFetchGamesQuery();
@@ -37,6 +38,11 @@ const Home = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Home</title>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Helmet>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import { useState } from 'react';
 import Cookies from "js-cookie";
+import { Helmet } from 'react-helmet-async';
 
 
 interface Team {
@@ -201,6 +202,11 @@ const TournamentCard = ({ tournament, currentUserId }: { tournament: any; curren
 
     return (
         <>
+            <Helmet>
+                <title>Tournaments</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
             <motion.div
                 whileHover={{ scale: 1.02 }}
                 className="bg-[#1F1F23] rounded-lg overflow-hidden shadow-lg border border-gray-800 hover:border-gray-700 transition-colors"

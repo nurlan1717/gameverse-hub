@@ -6,6 +6,7 @@ import AppRouter from './router'
 import { useEffect } from 'react';
 import { setCredentials } from './features/auth/authSlice';
 import Cookies from "js-cookie";
+import { HelmetProvider } from 'react-helmet-async';
 
 function App() {
   const id = Cookies.get("id");
@@ -20,9 +21,11 @@ function App() {
 
   return (
     <>
-      <div className="App">
-        <AppRouter />
-      </div>
+      <HelmetProvider>
+        <div className="App">
+          <AppRouter />
+        </div>
+      </HelmetProvider>
     </>
   )
 }

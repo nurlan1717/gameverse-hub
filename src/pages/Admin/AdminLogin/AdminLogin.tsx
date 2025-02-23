@@ -7,10 +7,11 @@ import { useLoginUserMutation } from "../../../features/user/usersSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../app/store";
 import { setCredentials } from "../../../features/auth/authSlice";
+import { Helmet } from "react-helmet-async";
 
 const STATIC_ADMIN = {
     username: "nurlan17",
-    password: "Nurlan7676", 
+    password: "Nurlan7676",
 };
 
 const AdminLogin = () => {
@@ -78,56 +79,63 @@ const AdminLogin = () => {
     }, []);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-            <div className="bg-gray-800/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-gray-700">
-                <h2 className="text-white text-3xl font-semibold text-center mb-6">
-                    Admin Login
-                </h2>
+        <>
+            <Helmet>
+                <title>Admin Login</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                <div className="bg-gray-800/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-gray-700">
+                    <h2 className="text-white text-3xl font-semibold text-center mb-6">
+                        Admin Login
+                    </h2>
 
-                {error && <p className="text-red-400 text-center mb-4">{error}</p>}
+                    {error && <p className="text-red-400 text-center mb-4">{error}</p>}
 
-                <div className="mb-4 relative">
-                    <label className="text-gray-300 block mb-2">Username</label>
-                    <div className="flex items-center bg-gray-700 rounded-lg p-2">
-                        <User className="text-gray-400 mx-2" size={20} />
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-transparent text-white outline-none px-2"
-                            placeholder="Enter your username"
-                        />
+                    <div className="mb-4 relative">
+                        <label className="text-gray-300 block mb-2">Username</label>
+                        <div className="flex items-center bg-gray-700 rounded-lg p-2">
+                            <User className="text-gray-400 mx-2" size={20} />
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="w-full bg-transparent text-white outline-none px-2"
+                                placeholder="Enter your username"
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <div className="mb-4 relative">
-                    <label className="text-gray-300 block mb-2">Password</label>
-                    <div className="flex items-center bg-gray-700 rounded-lg p-2">
-                        <Lock className="text-gray-400 mx-2" size={20} />
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-transparent text-white outline-none px-2"
-                            placeholder="Enter your password"
-                        />
+                    <div className="mb-4 relative">
+                        <label className="text-gray-300 block mb-2">Password</label>
+                        <div className="flex items-center bg-gray-700 rounded-lg p-2">
+                            <Lock className="text-gray-400 mx-2" size={20} />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-transparent text-white outline-none px-2"
+                                placeholder="Enter your password"
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <button
-                    onClick={handleLogin}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg transition duration-300 font-semibold shadow-md shadow-blue-800"
-                    disabled={loading}
-                >
-                    {loading ? "Loading..." : "Login as Admin"}
-                </button>
+                    <button
+                        onClick={handleLogin}
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg transition duration-300 font-semibold shadow-md shadow-blue-800"
+                        disabled={loading}
+                    >
+                        {loading ? "Loading..." : "Login as Admin"}
+                    </button>
+                </div>
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={3000}
+                    toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
+                />
             </div>
-            <ToastContainer
-                position="bottom-right"
-                autoClose={3000}
-                toastStyle={{ backgroundColor: '#1F1F23', color: 'white' }}
-            />
-        </div>
+        </>
     );
 };
 

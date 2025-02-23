@@ -12,6 +12,7 @@ import { Button, Table, Form, Input, DatePicker, InputNumber, Modal, message, Ta
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload/interface';
 import moment from 'moment';
+import { Helmet } from 'react-helmet-async';
 
 const { RangePicker } = DatePicker;
 
@@ -303,170 +304,177 @@ function DevTournament() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-                        <TrophyOutlined className="text-indigo-600" />
-                        <span>Tournament Management</span>
-                    </h1>
-                    <p className="text-gray-500 mt-1">Manage your tournaments and track their status</p>
+        <>
+            <Helmet>
+                <title>Developer Tournament</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                            <TrophyOutlined className="text-indigo-600" />
+                            <span>Tournament Management</span>
+                        </h1>
+                        <p className="text-gray-500 mt-1">Manage your tournaments and track their status</p>
+                    </div>
+                    <Button
+                        type="primary"
+                        icon={<PlusCircleOutlined />}
+                        onClick={() => {
+                            setIsModalVisible(true);
+                            setEditingId(null);
+                            form.resetFields();
+                            setFileList([]);
+                            setPreviewImage('');
+                        }}
+                        size="large"
+                        className="w-full sm:w-auto"
+                    >
+                        New Tournament
+                    </Button>
                 </div>
-                <Button
-                    type="primary"
-                    icon={<PlusCircleOutlined />}
-                    onClick={() => {
-                        setIsModalVisible(true);
-                        setEditingId(null);
-                        form.resetFields();
-                        setFileList([]);
-                        setPreviewImage('');
-                    }}
-                    size="large"
-                    className="w-full sm:w-auto"
+
+                <Modal
+                    title={editingId ? 'Edit Tournament' : 'Create New Tournament'}
+                    open={isModalVisible}
+                    onCancel={() => setIsModalVisible(false)}
+                    footer={null}
+                    width={600}
                 >
-                    New Tournament
-                </Button>
-            </div>
+                    <Form
+                        form={form}
+                        onFinish={handleSubmit}
+                        layout="vertical"
+                        className="mt-4"
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Form.Item
+                                name="name"
+                                label="Tournament Name"
+                                rules={[{ required: true, message: 'Please enter tournament name' }]}
+                                className="md:col-span-2"
+                            >
+                                <Input placeholder="Enter tournament name" />
+                            </Form.Item>
 
-            <Modal
-                title={editingId ? 'Edit Tournament' : 'Create New Tournament'}
-                open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
-                width={600}
-            >
-                <Form
-                    form={form}
-                    onFinish={handleSubmit}
-                    layout="vertical"
-                    className="mt-4"
-                >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Form.Item
-                            name="name"
-                            label="Tournament Name"
-                            rules={[{ required: true, message: 'Please enter tournament name' }]}
-                            className="md:col-span-2"
-                        >
-                            <Input placeholder="Enter tournament name" />
-                        </Form.Item>
+                            <Form.Item
+                                name="game"
+                                label="Game"
+                                rules={[{ required: true, message: 'Please enter game name' }]}
+                            >
+                                <Input placeholder="Enter game name" />
+                            </Form.Item>
 
-                        <Form.Item
-                            name="game"
-                            label="Game"
-                            rules={[{ required: true, message: 'Please enter game name' }]}
-                        >
-                            <Input placeholder="Enter game name" />
-                        </Form.Item>
+                            <Form.Item
+                                name="maxTeams"
+                                label="Maximum Teams"
+                                rules={[{ required: true, message: 'Please enter maximum teams' }]}
+                            >
+                                <InputNumber
+                                    min={1}
+                                    max={100}
+                                    placeholder="Enter max teams"
+                                    style={{ width: '100%' }}
+                                />
+                            </Form.Item>
 
-                        <Form.Item
-                            name="maxTeams"
-                            label="Maximum Teams"
-                            rules={[{ required: true, message: 'Please enter maximum teams' }]}
-                        >
-                            <InputNumber
-                                min={1}
-                                max={100}
-                                placeholder="Enter max teams"
-                                style={{ width: '100%' }}
-                            />
-                        </Form.Item>
+                            <Form.Item
+                                name="dateRange"
+                                label="Tournament Dates"
+                                rules={[{ required: true, message: 'Please select tournament dates' }]}
+                                className="md:col-span-2"
+                            >
+                                <RangePicker
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm"
+                                    style={{ width: '100%' }}
+                                />
+                            </Form.Item>
 
-                        <Form.Item
-                            name="dateRange"
-                            label="Tournament Dates"
-                            rules={[{ required: true, message: 'Please select tournament dates' }]}
-                            className="md:col-span-2"
-                        >
-                            <RangePicker
-                                showTime
-                                format="YYYY-MM-DD HH:mm"
-                                style={{ width: '100%' }}
-                            />
-                        </Form.Item>
+                            <Form.Item
+                                name="tournamentLogo"
+                                label="Tournament Logo"
+                                className="md:col-span-2"
+                            >
+                                <div className="space-y-4">
+                                    <Upload
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onChange={handleImageChange}
+                                        maxCount={1}
+                                        beforeUpload={() => false}
+                                        accept="image/*"
+                                    >
+                                        {fileList.length === 0 && (
+                                            <div>
+                                                <UploadOutlined />
+                                                <div className="mt-2">Upload</div>
+                                            </div>
+                                        )}
+                                    </Upload>
 
-                        <Form.Item
-                            name="tournamentLogo"
-                            label="Tournament Logo"
-                            className="md:col-span-2"
-                        >
-                            <div className="space-y-4">
-                                <Upload
-                                    listType="picture-card"
-                                    fileList={fileList}
-                                    onChange={handleImageChange}
-                                    maxCount={1}
-                                    beforeUpload={() => false}
-                                    accept="image/*"
-                                >
-                                    {fileList.length === 0 && (
-                                        <div>
-                                            <UploadOutlined />
-                                            <div className="mt-2">Upload</div>
+                                    {previewImage && (
+                                        <div className="mt-4">
+                                            <p className="text-sm text-gray-500 mb-2">Preview:</p>
+                                            <div className="w-full max-w-xs">
+                                                <img
+                                                    src={previewImage}
+                                                    alt="Preview"
+                                                    className="rounded-lg shadow-sm"
+                                                />
+                                            </div>
                                         </div>
                                     )}
-                                </Upload>
-
-                                {previewImage && (
-                                    <div className="mt-4">
-                                        <p className="text-sm text-gray-500 mb-2">Preview:</p>
-                                        <div className="w-full max-w-xs">
-                                            <img
-                                                src={previewImage}
-                                                alt="Preview"
-                                                className="rounded-lg shadow-sm"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </Form.Item>
-                    </div>
-
-                    <div className="flex justify-end gap-3 mt-6">
-                        <Button onClick={() => setIsModalVisible(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            loading={isCreatingTournament || isUpdating}
-                        >
-                            {editingId ? 'Update Tournament' : 'Create Tournament'}
-                        </Button>
-                    </div>
-                </Form>
-            </Modal>
-
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="overflow-x-auto">
-                    <Table
-                        columns={columns}
-                        dataSource={tournaments?.data}
-                        loading={isLoading}
-                        rowKey="_id"
-                        pagination={{
-                            pageSize: 10,
-                            showSizeChanger: true,
-                            showTotal: (total) => `Total ${total} tournaments`,
-                            responsive: true,
-                            className: "px-4 py-3",
-                        }}
-                        scroll={{ x: 'max-content' }}
-                        className="min-w-full"
-                        locale={{
-                            emptyText: (
-                                <div className="py-8 text-center">
-                                    <TrophyOutlined style={{ fontSize: 24 }} className="text-gray-400 mb-2" />
-                                    <p className="text-gray-500">No tournaments found</p>
                                 </div>
-                            )
-                        }}
-                    />
+                            </Form.Item>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <Button onClick={() => setIsModalVisible(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                loading={isCreatingTournament || isUpdating}
+                            >
+                                {editingId ? 'Update Tournament' : 'Create Tournament'}
+                            </Button>
+                        </div>
+                    </Form>
+                </Modal>
+
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <Table
+                            columns={columns}
+                            dataSource={tournaments?.data}
+                            loading={isLoading}
+                            rowKey="_id"
+                            pagination={{
+                                pageSize: 10,
+                                showSizeChanger: true,
+                                showTotal: (total) => `Total ${total} tournaments`,
+                                responsive: true,
+                                className: "px-4 py-3",
+                            }}
+                            scroll={{ x: 'max-content' }}
+                            className="min-w-full"
+                            locale={{
+                                emptyText: (
+                                    <div className="py-8 text-center">
+                                        <TrophyOutlined style={{ fontSize: 24 }} className="text-gray-400 mb-2" />
+                                        <p className="text-gray-500">No tournaments found</p>
+                                    </div>
+                                )
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

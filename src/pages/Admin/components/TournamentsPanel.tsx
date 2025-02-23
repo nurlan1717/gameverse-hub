@@ -12,6 +12,7 @@ import {
 } from '../../../features/tournaments/tournamentSlice';
 import { useGetTeamsQuery } from '../../../features/teams/teamsSlice';
 import { format } from 'date-fns';
+import { Helmet } from 'react-helmet-async';
 
 const TournamentsPanel = () => {
     const { data: tournaments, refetch: refetchTournaments } = useGetTournamentsQuery();
@@ -24,7 +25,7 @@ const TournamentsPanel = () => {
     const [selectedTournament, setSelectedTournament] = useState<any>(null);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [tournamentToDelete, setTournamentToDelete] = useState<string | null>(null);
-    
+
     const handleUpdateTournament = async (values: any) => {
         try {
             await updateTournament({ id: selectedTournament?._id, updates: values }).unwrap();
@@ -199,125 +200,132 @@ const TournamentsPanel = () => {
     ];
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-            <Row gutter={[16, 16]} className="mb-6">
-                <Col xs={24} sm={8}>
-                    <Card className="h-full">
-                        <Statistic
-                            title="Active Tournaments"
-                            value={activeCount}
-                            prefix={<TrophyOutlined className="text-green-500" />}
-                            valueStyle={{ color: '#3f8600' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={8}>
-                    <Card className="h-full">
-                        <Statistic
-                            title="Total Teams"
-                            value={teams?.data?.length || 0}
-                            prefix={<TeamOutlined className="text-blue-500" />}
-                            valueStyle={{ color: '#1890ff' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={8}>
-                    <Card className="h-full">
-                        <Statistic
-                            title="Total Prize Pool"
-                            value={tournaments?.data?.reduce((acc: number, t: any) => acc + (t.prizePool || 0), 0)}
-                            prefix={<DollarOutlined className="text-purple-500" />}
-                            valueStyle={{ color: '#722ed1' }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+        <>
+            <Helmet>
+                <title>Admin Tournament</title>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Helmet>
+            <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+                <Row gutter={[16, 16]} className="mb-6">
+                    <Col xs={24} sm={8}>
+                        <Card className="h-full">
+                            <Statistic
+                                title="Active Tournaments"
+                                value={activeCount}
+                                prefix={<TrophyOutlined className="text-green-500" />}
+                                valueStyle={{ color: '#3f8600' }}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={8}>
+                        <Card className="h-full">
+                            <Statistic
+                                title="Total Teams"
+                                value={teams?.data?.length || 0}
+                                prefix={<TeamOutlined className="text-blue-500" />}
+                                valueStyle={{ color: '#1890ff' }}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={8}>
+                        <Card className="h-full">
+                            <Statistic
+                                title="Total Prize Pool"
+                                value={tournaments?.data?.reduce((acc: number, t: any) => acc + (t.prizePool || 0), 0)}
+                                prefix={<DollarOutlined className="text-purple-500" />}
+                                valueStyle={{ color: '#722ed1' }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
 
-            <Card className="mb-6">
-                <h3 className="text-lg font-medium mb-4">Tournament Statistics</h3>
-                <div className="h-[300px]">
-                    <Column
-                        data={tournamentStatsData}
-                        xField="type"
-                        yField="value"
-                        label={{
-                            position: 'inside',
-                            style: {
-                                fill: '#FFFFFF',
-                                opacity: 0.6,
-                            },
-                        }}
-                        color={['#3f8600', '#1890ff', '#722ed1']}
-                        className="h-full"
-                    />
-                </div>
-            </Card>
+                <Card className="mb-6">
+                    <h3 className="text-lg font-medium mb-4">Tournament Statistics</h3>
+                    <div className="h-[300px]">
+                        <Column
+                            data={tournamentStatsData}
+                            xField="type"
+                            yField="value"
+                            label={{
+                                position: 'inside',
+                                style: {
+                                    fill: '#FFFFFF',
+                                    opacity: 0.6,
+                                },
+                            }}
+                            color={['#3f8600', '#1890ff', '#722ed1']}
+                            className="h-full"
+                        />
+                    </div>
+                </Card>
 
-            <Card>
-                <div className="overflow-x-auto">
-                    <Table
-                        columns={columns}
-                        dataSource={tournaments?.data}
-                        rowKey="_id"
-                        pagination={{
-                            pageSize: 10,
-                            showSizeChanger: true,
-                            showTotal: (total) => `Total ${total} tournaments`,
-                            responsive: true,
-                        }}
-                        scroll={{ x: 'max-content' }}
-                    />
-                </div>
-            </Card>
+                <Card>
+                    <div className="overflow-x-auto">
+                        <Table
+                            columns={columns}
+                            dataSource={tournaments?.data}
+                            rowKey="_id"
+                            pagination={{
+                                pageSize: 10,
+                                showSizeChanger: true,
+                                showTotal: (total) => `Total ${total} tournaments`,
+                                responsive: true,
+                            }}
+                            scroll={{ x: 'max-content' }}
+                        />
+                    </div>
+                </Card>
 
-            <Modal
-                title="Update Tournament"
-                key={tournaments?.data?._id}
-                visible={isUpdateModalVisible}
-                onCancel={() => setIsUpdateModalVisible(false)}
-                footer={null}
-            >
-                <Form
-                    initialValues={{
-                        ...selectedTournament,
-                        startDate: selectedTournament?.startDate ? moment(selectedTournament.startDate) : null,
-                    }}
-                    onFinish={handleUpdateTournament}
-                    layout="vertical"
+                <Modal
+                    title="Update Tournament"
+                    key={tournaments?.data?._id}
+                    visible={isUpdateModalVisible}
+                    onCancel={() => setIsUpdateModalVisible(false)}
+                    footer={null}
                 >
-                    <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input the tournament name!' }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Start Date"
-                        name="startDate"
-                        rules={[{ required: true, message: "Please select the start date!" }]}
+                    <Form
+                        initialValues={{
+                            ...selectedTournament,
+                            startDate: selectedTournament?.startDate ? moment(selectedTournament.startDate) : null,
+                        }}
+                        onFinish={handleUpdateTournament}
+                        layout="vertical"
                     >
-                        <DatePicker
-                            showTime
-                            format="YYYY-MM-DD HH:mm:ss"
-                        />
-                    </Form.Item>
-                    <Form.Item label="Prize Pool" name="prizePool" rules={[{ required: true, message: 'Please input the prize pool!' }]}>
-                        <InputNumber min={0} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Update
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input the tournament name!' }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Start Date"
+                            name="startDate"
+                            rules={[{ required: true, message: "Please select the start date!" }]}
+                        >
+                            <DatePicker
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                            />
+                        </Form.Item>
+                        <Form.Item label="Prize Pool" name="prizePool" rules={[{ required: true, message: 'Please input the prize pool!' }]}>
+                            <InputNumber min={0} style={{ width: '100%' }} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                Update
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
 
-            <Modal
-                title="Delete Tournament"
-                visible={isDeleteModalVisible}
-                onCancel={() => setIsDeleteModalVisible(false)}
-                onOk={handleDeleteTournament}
-            >
-                <p>Are you sure you want to delete this tournament?</p>
-            </Modal>
-        </div>
+                <Modal
+                    title="Delete Tournament"
+                    visible={isDeleteModalVisible}
+                    onCancel={() => setIsDeleteModalVisible(false)}
+                    onOk={handleDeleteTournament}
+                >
+                    <p>Are you sure you want to delete this tournament?</p>
+                </Modal>
+            </div>
+        </>
     );
 };
 

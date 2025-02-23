@@ -1,14 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BASE_URL } from '../../constants/api';
 
-
-interface News {
-    title?: string;
-    category?: string;
-    author?: string;
-    description?: string;
-    image?: File;
-}
 interface GameNews {
     breaking: Array<{
         _id: string;
@@ -54,7 +46,7 @@ export const gameNewsApi = createApi({
         }),
         getSingleGameNews: builder.query<GameNews, string>({
             query: (id) => `/${id}`,
-            providesTags: (result, error, id) => [{ type: 'GameNews', id }],
+            providesTags: ['GameNews'],
         }),
         createGameNews: builder.mutation<GameNews, FormData>({
             query: (formData) => ({

@@ -14,7 +14,7 @@ import { useGetTeamsQuery } from '../../../features/teams/teamsSlice';
 import { format } from 'date-fns';
 
 const TournamentsPanel = () => {
-    const { data: tournaments, refetch: refetchTournaments } = useGetTournamentsQuery({});
+    const { data: tournaments, refetch: refetchTournaments } = useGetTournamentsQuery();
     const { data: teams } = useGetTeamsQuery({});
     const [updateTournament] = useUpdateTournamentMutation();
     const [deleteTournament] = useDeleteTournamentMutation();

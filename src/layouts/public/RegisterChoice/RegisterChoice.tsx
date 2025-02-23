@@ -9,7 +9,7 @@ const RegisterChoice = () => {
 
     useEffect(() => {
         if (Cookies.get("token")) {
-            navigate("/home");
+            navigate("/");
         }
     }, [navigate]);
 

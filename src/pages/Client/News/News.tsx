@@ -52,7 +52,7 @@ const LoadingSkeleton = () => (
 );
 
 const News = () => {
-    const { data: gameNews, error, isLoading } = useGetGameNewsQuery({});
+    const { data: gameNews, error, isLoading } = useGetGameNewsQuery();
 
     if (error) {
         return (

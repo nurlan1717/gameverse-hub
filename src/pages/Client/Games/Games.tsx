@@ -65,7 +65,7 @@ const GameCard = ({ game }: { game: any }) => {
                         {game.genre}
                     </span>
                 </div>
-                <button 
+                <button
                     onClick={() => game._id && navigate(`${game._id}`)}
                     className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl transition-all duration-300 transform hover:shadow-lg hover:shadow-indigo-500/25 active:scale-95"
                 >
@@ -120,7 +120,7 @@ const Games = () => {
     });
 
     const games = gamesResponse?.data || [];
-    const filteredGames = games.filter(game => 
+    const filteredGames = games.filter((game: any) =>
         game.title.toLowerCase().includes(filters.search.toLowerCase())
     );
 
@@ -155,7 +155,7 @@ const Games = () => {
             animate={{ opacity: 1 }}
             className="min-h-screen bg-gradient-to-br from-[#0F0F13] via-[#151518] to-[#0F0F13] py-16 px-4">
             <div className="max-w-7xl mx-auto">
-                <motion.div 
+                <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     className="text-center mb-16"
@@ -171,7 +171,7 @@ const Games = () => {
                     </p>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
@@ -315,11 +315,10 @@ const Games = () => {
                                     <button
                                         key={index}
                                         onClick={() => handlePageChange(index + 1)}
-                                        className={`px-4 py-2 rounded-xl transition-all duration-300 ${
-                                            currentPage === index + 1
+                                        className={`px-4 py-2 rounded-xl transition-all duration-300 ${currentPage === index + 1
                                                 ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/25'
                                                 : 'bg-[#1F1F23] text-gray-400 hover:bg-[#2A2A2E] border border-gray-800/50 hover:border-indigo-500/50'
-                                        }`}
+                                            }`}
                                     >
                                         {index + 1}
                                     </button>

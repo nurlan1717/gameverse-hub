@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Select, Card, Statistic, Row, Col, Upload, Skeleton, Popconfirm } from "antd";
+import { Table, Button, Modal, Form, Input, Select, Card, Statistic, Upload, Skeleton, Popconfirm } from "antd";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { UserOutlined, MailOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Cookies from 'js-cookie';
@@ -13,7 +13,6 @@ import {
 import { useGetUserByIdQuery } from "../../../features/user/usersSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -26,6 +25,7 @@ interface Game {
     price: number;
     description: string;
     approved: boolean;
+    fileUrl: File | null;
 }
 
 interface GameFormValues {
@@ -136,13 +136,11 @@ const DashboardDev = () => {
         {
             title: "Title",
             dataIndex: "title",
-            key: "title",
             responsive: ['sm'],
         },
         {
             title: "Description",
             dataIndex: "description",
-            key: "description",
             responsive: ['md'],
         },
         {
@@ -161,7 +159,6 @@ const DashboardDev = () => {
         {
             title: "Rating",
             dataIndex: "averageRating",
-            key: "averageRating",
             responsive: ['lg'],
         },
         {
@@ -537,7 +534,7 @@ const DashboardDev = () => {
                     </Form>
                 </Modal>
 
-                <style jsx global>{`
+                <style>{`
                     .responsive-modal {
                         max-width: 90vw !important;
                     }

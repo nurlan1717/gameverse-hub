@@ -21,7 +21,7 @@ export const gameApi = createApi({
   }),
   tagTypes: ["Games", "PendingGames"],
   endpoints: (builder) => ({
-    fetchGames: builder.query<Game[], void>({
+    fetchGames: builder.query<any, void>({
       query: () => "games",
       providesTags: ["Games"],
     }),
@@ -43,7 +43,7 @@ export const gameApi = createApi({
       providesTags: ["Games"],
     }),
 
-    createGame: builder.mutation<Game, FormData>({
+    createGame: builder.mutation<any, FormData>({
       query: (gameData) => ({
         url: "games",
         method: "POST",
@@ -52,7 +52,7 @@ export const gameApi = createApi({
       invalidatesTags: ["Games"],
     }),
 
-    updateGame: builder.mutation<Game, { id: string; gameData: Partial<Game> }>({
+    updateGame: builder.mutation<any, { id: string; gameData: any }>({
       query: ({ id, gameData }) => ({
         url: `games/${id}`,
         method: "PUT",
@@ -69,7 +69,7 @@ export const gameApi = createApi({
       invalidatesTags: ["Games"],
     }),
 
-    fetchPendingGames: builder.query<Game[], void>({
+    fetchPendingGames: builder.query<any, void>({
       query: () => `${ADMIN_URL_BASE}api/games/admin/games/pending`,
       providesTags: ["PendingGames"],
     }),

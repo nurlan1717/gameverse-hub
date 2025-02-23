@@ -153,8 +153,8 @@ const Teams = () => {
             toast.error('Failed to delete team');
         }
     };
-    const isCaptain = (team: Team) => {
-        return team.members.some(member => member.userId._id === id && member.role === 'captain');
+    const isCaptain = (team: any) => {
+        return team.members.some((member: any) => member.userId._id === id && member.role === 'captain');
     };
 
     if (isLoading) {
@@ -225,8 +225,8 @@ const Teams = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {teams?.data?.map((team: Team) => (
-                        <div 
-                            key={team._id} 
+                        <div
+                            key={team._id}
                             className="bg-[#1F1F23] rounded-xl p-6 hover:shadow-2xl transition-all duration-300 border border-gray-800 hover:border-gray-700 group"
                         >
                             <div className="flex items-center space-x-4 mb-6">
@@ -250,7 +250,7 @@ const Teams = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <div 
+                                <div
                                     className="bg-[#2A2A2E] p-4 rounded-lg cursor-pointer hover:bg-[#353539] transition-colors"
                                     onClick={() => setExpandedTeam(expandedTeam === team._id ? null : team._id)}
                                 >
@@ -261,10 +261,9 @@ const Teams = () => {
                                                 Team Members ({team.members.length})
                                             </span>
                                         </div>
-                                        <ChevronRight 
-                                            className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-                                                expandedTeam === team._id ? 'rotate-90' : ''
-                                            }`}
+                                        <ChevronRight
+                                            className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${expandedTeam === team._id ? 'rotate-90' : ''
+                                                }`}
                                         />
                                     </div>
                                 </div>
@@ -299,9 +298,8 @@ const Teams = () => {
                                                     <span className="text-gray-300">
                                                         {member.userDetails?.username || 'Unknown User'}
                                                     </span>
-                                                    <span className={`text-sm ml-2 ${
-                                                        member.role === 'captain' ? 'text-[#26bbff]' : 'text-gray-500'
-                                                    }`}>
+                                                    <span className={`text-sm ml-2 ${member.role === 'captain' ? 'text-[#26bbff]' : 'text-gray-500'
+                                                        }`}>
                                                         ({member.role})
                                                     </span>
                                                 </div>

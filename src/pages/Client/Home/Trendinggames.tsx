@@ -23,7 +23,7 @@ const TrendingGames: React.FC = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setGames(response.data.data.filter((game: Game) => game.approved)); // Yalnız approved olanları saxla
+                setGames(response.data.data.filter((game: Game) => game.approved)); 
             } catch (err) {
                 setError("Failed to fetch top selling games.");
             } finally {
@@ -67,7 +67,7 @@ const TrendingGames: React.FC = () => {
                                 <p className="text-gray-300 text-sm flex items-center justify-center gap-1">
                                     <Flame size={16} className="text-red-500" /> {game.title}
                                 </p>
-                                <p className="text-gray-400 text-xs mt-1">⭐ {game.rating} | 🛒 {game.sales} Sales</p>
+                                <p className="text-gray-400 text-xs mt-1">⭐ {game.averageRating} | 🛒 {game.sales} Sales</p>
                             </div>
                             {game.freeWeekly && (
                                 <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">

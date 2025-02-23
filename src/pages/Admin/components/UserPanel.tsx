@@ -16,7 +16,7 @@ const UsersPanel = () => {
 
     const unverifiedDevelopers = React.useMemo(() => {
         if (!users?.data) return [];
-        return users.data.filter(user => user.isVerifiedByAdmin === false);
+        return users.data.filter((user: any) => user.isVerifiedByAdmin === false);
     }, [users]);
 
     const userSignUpData = React.useMemo(() => {
@@ -222,7 +222,7 @@ const UsersPanel = () => {
                     <Card>
                         <Statistic
                             title="Active Users"
-                            value={users?.data?.filter(u => !u.isBanned).length || 0}
+                            value={users?.data?.filter((u: any) => !u.isBanned).length || 0}
                             valueStyle={{ color: '#3f8600' }}
                         />
                     </Card>
@@ -231,7 +231,7 @@ const UsersPanel = () => {
                     <Card>
                         <Statistic
                             title="Banned Users"
-                            value={users?.data?.filter(u => u.isBanned).length || 0}
+                            value={users?.data?.filter((u: any) => u.isBanned).length || 0}
                             valueStyle={{ color: '#cf1322' }}
                         />
                     </Card>
@@ -246,7 +246,6 @@ const UsersPanel = () => {
                             data={userActivityData}
                             xField="date"
                             yField="value"
-                            responsive
                         />
                     </Card>
                 </Col>

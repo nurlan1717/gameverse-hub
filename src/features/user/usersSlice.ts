@@ -143,7 +143,7 @@ export const userApi = createApi({
       query: ({ token, password }) => ({
         url: `users/reset-password/${token}`,
         method: 'POST',
-        body: { password },
+        body: { token, password },
       }),
       invalidatesTags: ['User'],
     }),

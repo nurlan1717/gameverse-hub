@@ -114,7 +114,7 @@ const UserProfilePage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="max-w-4xl mx-auto bg-[#1a1a1f] rounded-2xl overflow-hidden shadow-xl"
                     >
-                        <div className="relative h-48 bg-gradient-to-r from-blue-600 to-[#26bbff]">
+                        <div className="relative h-64 bg-gradient-to-r from-blue-600 to-[#26bbff]">
                             <div className="absolute inset-0 bg-black/20"></div>
                             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 flex flex-col sm:flex-row items-end space-y-4 sm:space-y-0 sm:space-x-6">
                                 <motion.div

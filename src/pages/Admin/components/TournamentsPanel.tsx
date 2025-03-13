@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Table, Button, Card, Row, Col, Statistic, Space, message, Tooltip, Tag, Modal, Form, Input, DatePicker, InputNumber } from 'antd';
+import { Table, Button, Card, Row, Col, Statistic, Space, message, Tooltip, Tag, Modal, Form, Input, DatePicker, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver';
 import { Column } from '@ant-design/plots';
@@ -199,6 +199,15 @@ const TournamentsPanel = () => {
         },
     ];
 
+    const gameOptions = [
+        { value: 'BattleField', label: 'BattleField' },
+        { value: 'Valorant', label: 'Valorant' },
+        { value: 'Call of Duty', label: 'Call of Duty' },
+        { value: 'League of Legends', label: 'League of Legends' },
+        { value: 'Dota 2', label: 'Dota 2' },
+        { value: 'CS:GO', label: 'CS:GO' },
+    ];
+
     return (
         <>
             <Helmet>
@@ -279,8 +288,8 @@ const TournamentsPanel = () => {
 
                 <Modal
                     title="Update Tournament"
-                    key={tournaments?.data?._id}
-                    visible={isUpdateModalVisible}
+                    key={selectedTournament?._id}
+                    open={isUpdateModalVisible}
                     onCancel={() => setIsUpdateModalVisible(false)}
                     footer={null}
                 >
@@ -292,9 +301,33 @@ const TournamentsPanel = () => {
                         onFinish={handleUpdateTournament}
                         layout="vertical"
                     >
-                        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input the tournament name!' }]}>
+                        <Form.Item
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input the tournament name!' }]}
+                        >
                             <Input />
                         </Form.Item>
+
+                        <Form.Item
+                            label="Game"
+                            name="game"
+                            rules={[{ required: true, message: 'Please select a game!' }]}
+                        >
+                            <Select options={gameOptions} />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Maximum Teams"
+                            name="maxTeams"
+                            rules={[
+                                { required: true, message: 'Please input the maximum number of teams!' },
+                                { type: 'number', min: 2, message: 'Must have at least 2 teams!' }
+                            ]}
+                        >
+                            <InputNumber min={2} style={{ width: '100%' }} />
+                        </Form.Item>
+
                         <Form.Item
                             label="Start Date"
                             name="startDate"
@@ -303,14 +336,26 @@ const TournamentsPanel = () => {
                             <DatePicker
                                 showTime
                                 format="YYYY-MM-DD HH:mm:ss"
+                                style={{ width: '100%' }}
                             />
                         </Form.Item>
-                        <Form.Item label="Prize Pool" name="prizePool" rules={[{ required: true, message: 'Please input the prize pool!' }]}>
-                            <InputNumber min={0} style={{ width: '100%' }} />
+
+                        <Form.Item
+                            label="Prize Pool"
+                            name="prizePool"
+                            rules={[{ required: true, message: 'Please input the prize pool!' }]}
+                        >
+                            <InputNumber
+                                min={0}
+                                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={value => parseFloat(value!.replace(/\$\s?|(,*)/g, '')) as any}
+                                style={{ width: '100%' }}
+                            />
                         </Form.Item>
+
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Update
+                            <Button type="primary" htmlType="submit" block>
+                                Update Tournament
                             </Button>
                         </Form.Item>
                     </Form>
@@ -318,7 +363,7 @@ const TournamentsPanel = () => {
 
                 <Modal
                     title="Delete Tournament"
-                    visible={isDeleteModalVisible}
+                    open={isDeleteModalVisible}
                     onCancel={() => setIsDeleteModalVisible(false)}
                     onOk={handleDeleteTournament}
                 >

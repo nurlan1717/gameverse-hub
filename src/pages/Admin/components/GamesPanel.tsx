@@ -233,21 +233,6 @@ const GamesPanel = () => {
                 <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
                     <Col xs={24} md={12}>
                         <Card>
-                            <h3>Game Status Trends</h3>
-                            <Line
-                                data={gameMetricsData}
-                                xField="month"
-                                yField="value"
-                                seriesField="type"
-                                smooth
-                                legend={{
-                                    position: 'top',
-                                }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={24} md={12}>
-                        <Card>
                             <h3>Genre Distribution</h3>
                             <Pie
                                 data={genreDistributionData}
@@ -256,6 +241,7 @@ const GamesPanel = () => {
                                 radius={0.8}
                                 label={{
                                     type: 'inner',
+                                    autoRotate: false,
                                     offset: '-30%',
                                     content: '{name}',
                                     style: {
@@ -266,9 +252,6 @@ const GamesPanel = () => {
                             />
                         </Card>
                     </Col>
-                </Row>
-
-                <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
                     <Col xs={24} md={12}>
                         <Card>
                             <h3>Platform Distribution</h3>

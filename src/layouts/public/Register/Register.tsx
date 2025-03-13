@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { User, Mail, Lock, ShieldCheck, Facebook, Chrome, Sparkles } from "lucide-react";
+import { User, Mail, Lock, ShieldCheck, Facebook, Chrome, Sparkles, CheckCircle, LogIn } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRegisterUserMutation } from "../../../features/user/usersSlice";
@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
     const [register] = useRegisterUserMutation();
 
@@ -38,9 +39,10 @@ const Register = () => {
                 await register(postData).unwrap();
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 toast.success("Registered successfully! Please verify your email.");
+                setSuccess(true);
                 setTimeout(() => {
                     navigate("/login");
-                }, 3000);
+                }, 7000);
             } catch (err: any) {
                 if (err?.data?.message) {
                     toast.error(err.data.message);
@@ -85,55 +87,73 @@ const Register = () => {
                     </div>
 
                     <div className="bg-[#1E293B] rounded-xl shadow-xl p-6 backdrop-blur-lg border border-gray-700/50">
-                        <form onSubmit={formik.handleSubmit} className="space-y-4">
-                            {formFields.map(({ name, label, icon, type = "text" }) => (
-                                <div key={name} className="group">
-                                    <label className="text-gray-300 text-sm font-medium mb-1 block">
-                                        {label}
-                                    </label>
-                                    <div className={`
+                        {success ? (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle className="w-8 h-8 text-green-500" />
+                                </div>
+                                <h2 className="text-2xl font-semibold text-white mb-3">Registration Successful!</h2>
+                                <p className="text-gray-400 mb-6">
+                                    Please check your email for verification. You will be redirected to login in a few seconds.
+                                </p>
+                                <button
+                                    onClick={() => navigate("/login")}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white py-3 rounded-lg transition duration-300 font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                                >
+                                    <LogIn className="w-5 h-5" />
+                                    <span>Proceed to Login</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <form onSubmit={formik.handleSubmit} className="space-y-4">
+                                {formFields.map(({ name, label, icon, type = "text" }) => (
+                                    <div key={name} className="group">
+                                        <label className="text-gray-300 text-sm font-medium mb-1 block">
+                                            {label}
+                                        </label>
+                                        <div className={`
                                     flex items-center bg-[#2D3B4F] rounded-lg p-2 transition-all duration-200
                                     ${formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] ? 'ring-2 ring-red-500/50' : 'focus-within:ring-2 focus-within:ring-blue-500/50'}
                                 `}>
-                                        <span className="text-gray-400 mx-2 group-focus-within:text-blue-400">
-                                            {icon}
-                                        </span>
-                                        <input
-                                            type={type}
-                                            {...formik.getFieldProps(name)}
-                                            className="w-full bg-transparent text-white outline-none px-2 py-1.5"
-                                            placeholder={`Enter your ${label.toLowerCase()}`}
-                                        />
+                                            <span className="text-gray-400 mx-2 group-focus-within:text-blue-400">
+                                                {icon}
+                                            </span>
+                                            <input
+                                                type={type}
+                                                {...formik.getFieldProps(name)}
+                                                className="w-full bg-transparent text-white outline-none px-2 py-1.5"
+                                                placeholder={`Enter your ${label.toLowerCase()}`}
+                                            />
+                                        </div>
+                                        {formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] && (
+                                            <p className="text-red-400 text-sm mt-1 ml-1">{formik.errors[name as keyof typeof formik.errors]}</p>
+                                        )}
                                     </div>
-                                    {formik.touched[name as keyof typeof formik.touched] && formik.errors[name as keyof typeof formik.errors] && (
-                                        <p className="text-red-400 text-sm mt-1 ml-1">{formik.errors[name as keyof typeof formik.errors]}</p>
-                                    )}
-                                </div>
-                            ))}
+                                ))}
 
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`
                                 w-full mt-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg
                                 ${loading
-                                        ? 'bg-gray-600 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-blue-500/20'
-                                    }
+                                            ? 'bg-gray-600 cursor-not-allowed'
+                                            : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-blue-500/20'
+                                        }
                                 text-white flex items-center justify-center gap-2
                             `}
-                            >
-                                {loading ? (
-                                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                ) : (
-                                    <>
-                                        <User className="w-5 h-5" />
-                                        Create Account
-                                    </>
-                                )}
-                            </button>
-                        </form>
-
+                                >
+                                    {loading ? (
+                                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                        <>
+                                            <User className="w-5 h-5" />
+                                            Create Account
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        )}
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-700/50"></div>

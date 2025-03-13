@@ -86,11 +86,11 @@ const UsersPanel = () => {
         },
         {
             title: 'Status',
-            dataIndex: 'isVerifiedByAdmin',
-            key: 'isVerifiedByAdmin',
+            dataIndex: 'isVerified',
+            key: 'isVerified',
             render: (isVerified: boolean) => (
                 <Tag color={isVerified ? 'green' : 'red'}>
-                    {isVerified ? 'Verified' : 'Pending Approval'}
+                    {isVerified ? 'Verified' : 'Pending'}
                 </Tag>
             ),
         },
@@ -289,7 +289,7 @@ const UsersPanel = () => {
                         columns={columns}
                         dataSource={users?.data}
                         loading={isLoading}
-                        rowKey="id"
+                        rowKey="_id"
                         scroll={{ x: true }}
                     />
                 </Card>
@@ -300,14 +300,14 @@ const UsersPanel = () => {
                         columns={columns2}
                         dataSource={unverifiedDevelopers}
                         loading={isLoading}
-                        rowKey="id"
+                        rowKey="_id"
                         scroll={{ x: true }}
                     />
                 </Card>
 
                 <Modal
                     title="Ban Duration"
-                    visible={isModalVisible}
+                    open={isModalVisible}
                     onOk={handleBan}
                     onCancel={() => setIsModalVisible(false)}
                     width={300}

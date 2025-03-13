@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Trophy, Users, Calendar, AlertCircle, X, ChevronRight, Shield } from 'lucide-react';
+import { Trophy, Users, Calendar, AlertCircle, X, ChevronRight, Shield, DollarSign } from 'lucide-react';
 import { useGetActiveTournamentsQuery, useRegisterForTournamentMutation } from '../../../features/tournaments/tournamentSlice';
 import { useGetTeamsQuery } from '../../../features/teams/teamsSlice';
 import { format } from 'date-fns';
@@ -7,7 +7,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import { useState } from 'react';
 import Cookies from "js-cookie";
 import { Helmet } from 'react-helmet-async';
-
 
 interface Team {
     _id: string;
@@ -218,6 +217,12 @@ const TournamentCard = ({ tournament, currentUserId }: { tournament: any; curren
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F23] via-transparent to-transparent" />
+                    {tournament.prizePool > 0 && (
+                        <div className="absolute top-4 right-4 bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                            <DollarSign className="w-4 h-4" />
+                            {tournament.prizePool.toLocaleString()}
+                        </div>
+                    )}
                 </div>
 
                 <div className="p-6">
@@ -251,6 +256,12 @@ const TournamentCard = ({ tournament, currentUserId }: { tournament: any; curren
                                 )}
                             </span>
                         </div>
+                        {tournament.prizePool > 0 && (
+                            <div className="flex items-center gap-2 text-gray-400">
+                                <DollarSign className="w-4 h-4" />
+                                <span>Prize Pool: ${tournament.prizePool.toLocaleString()}</span>
+                            </div>
+                        )}
                     </div>
 
                     <button

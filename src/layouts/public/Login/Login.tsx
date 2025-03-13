@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { User, Lock, Facebook, Chrome, Sparkles, LogIn } from "lucide-react";
+import { User, Lock, Facebook, Chrome, Sparkles, LogIn, X, Key, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
+import { ClipLoader } from "react-spinners";
 import { ADMIN_URL_BASE } from "../../../constants/api";
-import { toast } from "react-toastify";
-import { useLoginUserMutation } from "../../../features/user/usersSlice";
+import { toast, ToastContainer } from "react-toastify";
+import { useForgotPasswordMutation, useLoginUserMutation, useResetPasswordMutation } from "../../../features/user/usersSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../app/store";
 import { setCredentials } from "../../../features/auth/authSlice";
@@ -12,16 +14,30 @@ import { Helmet } from "react-helmet-async";
 
 const Login = () => {
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState('');
+    const [Lpassword, setLpassword] = useState("");
+    const [token, setToken] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [step, setStep] = useState(1);
     const [loginUser] = useLoginUserMutation();
+    const [forgotPassword] = useForgotPasswordMutation();
+    const [resetPassword] = useResetPasswordMutation();
 
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
 
+    const slideVariants = {
+        enter: { x: 50, opacity: 0 },
+        center: { x: 0, opacity: 1 },
+        exit: { x: -50, opacity: 0 }
+    };
+
     const handleLogin = async () => {
-        if (!username || !password) {
+        if (!username || !Lpassword) {
             setError("Username and password are required.");
             toast.error("Please fill in all fields.");
             return;
@@ -31,7 +47,7 @@ const Login = () => {
         setError("");
 
         try {
-            const response = await loginUser({ username, password }).unwrap();
+            const response = await loginUser({ username, password: Lpassword }).unwrap();
             dispatch(setCredentials(response.data));
 
             if (!response.data.isVerified || !response.data.isVerifiedByAdmin) {
@@ -76,6 +92,61 @@ const Login = () => {
             navigate("/");
         }
     }, [navigate]);
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            toast.error('Please enter your email address.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await forgotPassword({ email });
+            if ('data' in response && response.data?.message) {
+                toast.success(response.data.message);
+                setStep(2);
+            }
+        } catch (error) {
+            toast.error('Failed to send reset password email.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResetPassword = async () => {
+        console.log(token, password);
+        if (!token || !password) {
+            toast.error('Please fill in all fields.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await resetPassword({ token, password });
+            console.log(response);
+            if ('data' in response && response.data?.message) {
+                toast.success('Password reset successfully!');
+                setShowForgotPassword(false);
+                setStep(1);
+                setToken('');
+                setPassword('');
+                setEmail('');
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error('Failed to reset password. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleModalClose = () => {
+        setShowForgotPassword(false);
+        setStep(1);
+        setToken('');
+        setPassword('');
+        setEmail('');
+    };
 
     return (
         <>
@@ -130,12 +201,21 @@ const Login = () => {
                                     </span>
                                     <input
                                         type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        value={Lpassword}
+                                        onChange={(e) => setLpassword(e.target.value)}
                                         className="w-full bg-transparent text-white outline-none px-2 py-1.5"
                                         placeholder="Enter your password"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={() => setShowForgotPassword(true)}
+                                    className="text-sm text-blue-400 cursor-pointer hover:text-blue-300 transition-colors duration-200"
+                                >
+                                    Forgot Password?
+                                </button>
                             </div>
 
                             <button
@@ -199,8 +279,129 @@ const Login = () => {
                             </p>
                         </div>
                     </div>
+                    <ToastContainer
+                        position="bottom-right"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
                 </div>
             </div>
+
+            {showForgotPassword && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-[#1E293B] rounded-xl shadow-xl p-6 max-w-md w-full relative border border-gray-700/50">
+                        <button
+                            onClick={handleModalClose}
+                            className="absolute right-4 top-4 text-gray-400 hover:text-white transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <h2 className="text-2xl font-bold text-white mb-4 cursor-pointer">
+                            {step === 1 ? 'Forgot Password' : 'Reset Password'}
+                        </h2>
+                        <p className="text-gray-400 mb-6">
+                            {step === 1
+                                ? "Enter your email address and we'll send you a reset token."
+                                : "Enter the token from your email and your new password."
+                            }
+                        </p>
+
+                        {step === 1 ? (
+                            <motion.div
+                                key="step1"
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                variants={slideVariants}
+                                transition={{ type: "tween", duration: 0.3 }}
+                                className="space-y-6"
+                            >
+                                <div className="group">
+                                    <label className="text-gray-300 text-sm font-medium mb-1 block">
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full bg-[#2D3B4F] text-white rounded-lg p-3 outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/50"
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleForgotPassword}
+                                    disabled={isLoading}
+                                    className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? <ClipLoader size={20} color="#ffffff" /> : 'Send Reset Token'}
+                                </motion.button>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="step2"
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                variants={slideVariants}
+                                transition={{ type: "tween", duration: 0.3 }}
+                                className="space-y-6"
+                            >
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Key className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter reset token"
+                                            value={token}
+                                            onChange={(e) => setToken(e.target.value)}
+                                            className="pl-10 w-full px-4 py-3 bg-[#2D3B4F] text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="password"
+                                            placeholder="Enter new password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="pl-10 w-full px-4 py-3 bg-[#2D3B4F] text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                        />
+                                    </div>
+                                </div>
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleResetPassword}
+                                    disabled={isLoading}
+                                    className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? <ClipLoader size={20} color="#ffffff" /> : (
+                                        <>
+                                            <RefreshCw className="w-5 h-5 mr-2" />
+                                            Reset Password
+                                        </>
+                                    )}
+                                </motion.button>
+                            </motion.div>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 };

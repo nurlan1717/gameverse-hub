@@ -50,15 +50,11 @@ const GameCard = ({ game }: { game: any }) => {
                 <div className="flex items-center gap-4 text-gray-400 text-sm mb-4">
                     <div className="flex items-center gap-1.5">
                         <Star className="w-4 h-4 text-yellow-500" />
-                        <span>{game.averageRating}/5</span>
+                        <span>{game.averageRating.toFixed(2)}/5.00</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <Users className="w-4 h-4" />
-                        <span>{game.players}k</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4" />
-                        <span>{game.playtime}h</span>
+                        <span>{game.sales}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 mb-4">

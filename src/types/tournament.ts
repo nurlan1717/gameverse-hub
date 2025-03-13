@@ -8,6 +8,7 @@ export interface Tournament {
     status: 'draft' | 'active' | 'completed';
     maxTeams: number;
     description: string;
+    tournamentLogo: string;
 }
 
 export interface CreateTournamentInput {

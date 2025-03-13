@@ -93,7 +93,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
                 pagination={{ clickable: true }}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="mySwiper"
-                style={{ width: "auto", height: window.innerWidth < 480 ? "360px" : "500px" }}
+                style={{ width: "auto", height: window.innerWidth < 480 ? "500px" : "500px" }}
             >
                 {isLoading
                     ? Array.from({ length: 5 }).map((_, index) => (
@@ -114,7 +114,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
                                 alt={game.title}
                                 className="w-full h-auto md:h-full lg:h-auto object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-300"
                             />
-                            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                            <div className="absolute bottom-0 left-0 right-0 p-2 pb-7 md:p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
                                 <div className="flex items-start justify-between mb-2">
                                     <div>
                                         <h3 className="text-white text-xl md:text-2xl lg:text-3xl font-bold">{game.title}</h3>
@@ -126,7 +126,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-yellow-400 text-lg">★ {game.averageRating.toFixed()}</span>
+                                        <span className="text-yellow-400 text-lg">★ {game.averageRating.toFixed(1)}</span>
                                     </div>
                                 </div>
 

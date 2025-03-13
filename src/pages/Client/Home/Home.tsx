@@ -49,7 +49,7 @@ const Home = () => {
         transition={{ duration: 0.5 }}
         className="relative w-full h-[500px] md:h-[600px] flex items-center justify-center text-white">
         <div className="absolute inset-0 bg-[#101014] bg-opacity-90">
-          <div className="container mx-auto px-4 mt-8">
+          <div className="container mx-auto px-6 mt-8">
             {isLoading ? (
               <div className="animate-pulse space-y-6">
                 <div className="h-10 bg-[#1F1F23] rounded w-1/3"></div>

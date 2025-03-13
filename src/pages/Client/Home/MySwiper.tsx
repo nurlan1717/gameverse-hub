@@ -126,7 +126,7 @@ const MyGamesSlider: React.FC<MyGamesSliderProps> = ({ games }) => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-yellow-400 text-lg">★ {game.averageRating}</span>
+                                        <span className="text-yellow-400 text-lg">★ {game.averageRating.toFixed()}</span>
                                     </div>
                                 </div>
 

@@ -118,7 +118,7 @@ const Chat = () => {
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             </Helmet>
-            <div className="bg-[#0f0f13] min-h-screen py-8 px-4">
+            {/* <div className="bg-[#0f0f13] min-h-screen py-8 px-4">
                 <div className="max-w-5xl mx-auto">
                     {isLoading ? (
                         <SkeletonLoading />
@@ -200,7 +200,16 @@ const Chat = () => {
                         boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
                     }}
                 />
+            </div> */}
+            <div className="flex items-center justify-center p-20 bg-gradient-to-br from-[#0f0f13] to-[#1a1a1f] px-4">
+                <div className="bg-[#1f1f27] p-8 md:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center space-y-4 border border-gray-700">
+                    <h2 className="text-3xl font-semibold text-white">Service Temporarily Unavailable</h2>
+                    <p className="text-gray-400 text-sm md:text-base">
+                        The chat service has been temporarily suspended. Please try again later.
+                    </p>
+                </div>
             </div>
+
         </>
     );
 };
